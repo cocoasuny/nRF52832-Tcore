@@ -36,6 +36,9 @@ void vApplicationIdleHook( void )
 int main(void)
 {
     
+    /* init for bsp */
+    bsp_init();   
+    
     // Start FreeRTOS scheduler.
     vTaskStartScheduler();
 

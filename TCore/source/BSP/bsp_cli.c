@@ -1,10 +1,10 @@
 /**
   ****************************************************************************************
-  * @file    common.h
+  * @file    bsp_cli.c
   * @author  Jason
   * @version V1.0.0
-  * @date    2017-7-27
-  * @brief   common header
+  * @date    2017-7-10
+  * @brief   the implement of common line interface
   ****************************************************************************************
   * @attention
   *
@@ -12,24 +12,19 @@
   *
   ****************************************************************************************
   */
-  
-  
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __COMMON__
-#define __COMMON__
 
-#include <stdint.h>
-#include <string.h>
+/* Includes ------------------------------------------------------------------*/
+#include "bsp_cli.h"
 
-#include "FreeRTOS.h"
-#include "task.h"
-#include "timers.h"
-#include "semphr.h"
-#include "bsp.h"
 
-#endif // __COMMON__
+
+
+
+
+
 
 
 /************************ (C) COPYRIGHT 2017 ShenZhen DBGJ Co., Ltd. *****END OF FILE****/
+
 
 
