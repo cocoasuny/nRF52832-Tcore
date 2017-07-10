@@ -41,7 +41,7 @@
 #if NRF_MODULE_ENABLED(NRF_CLI_UART)
 #include "nrf_cli_uart.h"
 #include "app_uart.h"
-#include "boards.h"
+#include "common.h"
 
 static void uart_error_handle(app_uart_evt_t * p_event)
 {

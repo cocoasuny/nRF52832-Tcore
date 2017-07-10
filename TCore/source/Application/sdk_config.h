@@ -2749,6 +2749,10 @@
 #define UART_DEFAULT_CONFIG_HWFC 0
 #endif
 
+#ifndef RETARGET_ENABLED
+#define RETARGET_ENABLED    1
+#endif
+
 // <o> UART_DEFAULT_CONFIG_PARITY  - Parity
  
 // <0=> Excluded 
@@ -3043,6 +3047,14 @@
 #define APP_PWM_ENABLED 0
 #endif
 
+
+// <q> APP_FIFO_ENABLED  - app_fifo - Software FIFO implementation
+ 
+
+#ifndef APP_FIFO_ENABLED
+#define APP_FIFO_ENABLED 1
+#endif
+
 // <e> APP_SCHEDULER_ENABLED - app_scheduler - Events scheduler
 //==========================================================
 #ifndef APP_SCHEDULER_ENABLED
@@ -3158,7 +3170,7 @@
 // <e> APP_UART_ENABLED - app_uart - UART driver
 //==========================================================
 #ifndef APP_UART_ENABLED
-#define APP_UART_ENABLED 0
+#define APP_UART_ENABLED 1
 #endif
 #if  APP_UART_ENABLED
 // <o> APP_UART_DRIVER_INSTANCE  - UART instance used
@@ -3697,6 +3709,66 @@
 #ifndef APP_USBD_MSC_CLASS_LOG_ENABLED
 #define APP_USBD_MSC_CLASS_LOG_ENABLED 0
 #endif
+
+
+// <h> nrf_cli - Command line interface.
+
+//==========================================================
+// <q> NRF_CLI_ENABLED  - Enable/disable CLI module.
+ 
+
+#ifndef NRF_CLI_ENABLED
+#define NRF_CLI_ENABLED 1
+#endif
+
+// <o> NRF_CLI_ARGC_MAX - Maximum number of parameters passed to command handler. 
+#ifndef NRF_CLI_ARGC_MAX
+#define NRF_CLI_ARGC_MAX 12
+#endif
+
+// <o> NRF_CLI_CMD_BUFF_SIZE - Maximum buffer size for single command. 
+#ifndef NRF_CLI_CMD_BUFF_SIZE
+#define NRF_CLI_CMD_BUFF_SIZE 48
+#endif
+
+// <o> NRF_CLI_HISTORY_COUNT - Number of entries in cli history (0 -> history disabled). 
+#ifndef NRF_CLI_HISTORY_COUNT
+#define NRF_CLI_HISTORY_COUNT 8
+#endif
+
+// <o> NRF_CLI_PRINTF_BUFF_SIZE - Maximum buffer size for single printf. 
+#ifndef NRF_CLI_PRINTF_BUFF_SIZE
+#define NRF_CLI_PRINTF_BUFF_SIZE 128
+#endif
+
+// <o> NRF_CLI_VT100_COLORS - CLI colors enable/disable. 
+#ifndef NRF_CLI_VT100_COLORS
+#define NRF_CLI_VT100_COLORS 1
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> nrf_cli_uart - UART command line interface transport.
+
+//==========================================================
+// <q> NRF_CLI_UART_ENABLED  - Enable/disable CLI UART module.
+ 
+
+#ifndef NRF_CLI_UART_ENABLED
+#define NRF_CLI_UART_ENABLED 1
+#endif
+
+// <o> NRF_CLI_UART_TX_BUF_SIZE - TX FIFO size. 
+#ifndef NRF_CLI_UART_TX_BUF_SIZE
+#define NRF_CLI_UART_TX_BUF_SIZE 64
+#endif
+
+// <s> NRF_CLI_UART_RX_BUF_SIZE - RX FIFO size.
+#ifndef NRF_CLI_UART_RX_BUF_SIZE
+#define NRF_CLI_UART_RX_BUF_SIZE 64
+#endif
+
 
 // </h> 
 //==========================================================

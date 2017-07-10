@@ -30,9 +30,15 @@ void bsp_init(void)
     /* init for clock */
     ret = nrf_drv_clock_init();
     APP_ERROR_CHECK(ret);
+    
     /* init for power */
     ret = nrf_drv_power_init(NULL);
-    APP_ERROR_CHECK(ret);     
+    APP_ERROR_CHECK(ret);
+
+    /* init for cli,and start */
+    ret = cli_init();
+    APP_ERROR_CHECK(ret);
+    cli_start();
 }
 
 

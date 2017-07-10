@@ -1,10 +1,10 @@
 /**
   ****************************************************************************************
-  * @file    bsp.h
+  * @file    platform.h
   * @author  Jason
   * @version V1.0.0
-  * @date    2017-7-10
-  * @brief   the header of bsp.c
+  * @date    2017-7-27
+  * @brief   the hardware platform define 
   ****************************************************************************************
   * @attention
   *
@@ -12,22 +12,25 @@
   *
   ****************************************************************************************
   */
-
-/* Includes ------------------------------------------------------------------*/
-#include "nrf_drv_clock.h"
-#include "nrf_drv_power.h"
-#include "bsp_cli.h"
-
-
-
-/* function declares */
-void bsp_init(void);
+  
+  
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __PLATFORM__
+#define __PLATFORM__
 
 
+/* gpio define for uart */
+#define RX_PIN_NUMBER               2
+#define TX_PIN_NUMBER               3
+#define CTS_PIN_NUMBER              7
+#define RTS_PIN_NUMBER              5
+#define HWFC                        true
 
+
+
+#endif // __PLATFORM__
 
 
 /************************ (C) COPYRIGHT 2017 ShenZhen DBGJ Co., Ltd. *****END OF FILE****/
-
 
 

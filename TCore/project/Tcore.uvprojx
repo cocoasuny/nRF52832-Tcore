@@ -335,7 +335,7 @@
               <MiscControls>--reduce_paths</MiscControls>
               <Define>BLE_STACK_SUPPORT_REQD CONFIG_GPIO_AS_PINRESET FREERTOS NRF52 NRF52832_XXAA NRF52_PAN_12 NRF52_PAN_15 NRF52_PAN_20 NRF52_PAN_31 NRF52_PAN_36 NRF52_PAN_51 NRF52_PAN_54 NRF52_PAN_55 NRF52_PAN_58 NRF52_PAN_64 NRF52_PAN_74 NRF_SD_BLE_API_VERSION=4 S132 SOFTDEVICE_PRESENT __HEAP_SIZE=1024 __STACK_SIZE=2048</Define>
               <Undefine></Undefine>
-              <IncludePath>..\source\Application;..\source\Middlewares\freertos;..\source\SDK\drivers_nrf;..\source\Middlewares\freertos\config;..\source\Middlewares\freertos\portable\ARM;..\source\Middlewares\freertos\portable\CMSIS;..\source\Middlewares\freertos\source\include;..\source\SDK\softdevice\s132\headers;..\source\SDK\libraries\util;..\source\Middlewares\freertos\source\portable\MemMang;..\source\Middlewares\freertos\portable\ARM\nrf52;..\source\Middlewares\freertos\portable\CMSIS\nrf52;..\source\SDK\libraries\log;..\source\SDK\libraries\strerror;..\source\SDK\libraries\log\src;..\source\SDK\softdevice\common\softdevice_handler;..\source\SDK\drivers_nrf\hal;..\source\SDK\drivers_nrf\clock;..\source\SDK\drivers_nrf\common;..\source\SDK\libraries\fstorage;..\source\SDK\libraries\fstorage;..\source\SDK\libraries\experimental_section_vars;..\source\SDK\drivers_nrf\uart;..\source\SDK\drivers_nrf\power;..\source\BSP</IncludePath>
+              <IncludePath>..\source\Application;..\source\Middlewares\freertos;..\source\SDK\drivers_nrf;..\source\Middlewares\freertos\config;..\source\Middlewares\freertos\portable\ARM;..\source\Middlewares\freertos\portable\CMSIS;..\source\Middlewares\freertos\source\include;..\source\SDK\softdevice\s132\headers;..\source\SDK\libraries\util;..\source\Middlewares\freertos\source\portable\MemMang;..\source\Middlewares\freertos\portable\ARM\nrf52;..\source\Middlewares\freertos\portable\CMSIS\nrf52;..\source\SDK\libraries\log;..\source\SDK\libraries\strerror;..\source\SDK\libraries\log\src;..\source\SDK\softdevice\common\softdevice_handler;..\source\SDK\drivers_nrf\hal;..\source\SDK\drivers_nrf\clock;..\source\SDK\drivers_nrf\common;..\source\SDK\libraries\fstorage;..\source\SDK\libraries\fstorage;..\source\SDK\libraries\experimental_section_vars;..\source\SDK\drivers_nrf\uart;..\source\SDK\drivers_nrf\power;..\source\BSP;..\source\SDK\libraries\cli;..\source\SDK\libraries\cli\uart;..\source\SDK\libraries\uart;..\source\SDK\libraries\fifo</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -569,6 +569,21 @@
               <FileName>sensorsim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\source\SDK\libraries\sensorsim\sensorsim.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_uart_fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\SDK\libraries\uart\app_uart_fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>retarget.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\SDK\libraries\uart\retarget.c</FilePath>
+            </File>
+            <File>
+              <FileName>app_fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\SDK\libraries\fifo\app_fifo.c</FilePath>
             </File>
           </Files>
         </Group>

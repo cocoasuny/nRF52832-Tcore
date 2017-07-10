@@ -26,6 +26,7 @@
 #include "timers.h"
 #include "semphr.h"
 #include "bsp.h"
+#include "platform.h"
 
 #endif // __COMMON__
 

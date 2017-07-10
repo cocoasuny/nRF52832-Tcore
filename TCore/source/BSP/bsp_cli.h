@@ -14,10 +14,15 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
+#include "common.h"
+#include "nrf_cli.h"
+#include "nrf_cli_uart.h"
 
 
-
-
+/* function declares */
+ret_code_t cli_init(void);
+ret_code_t cli_start(void);
+void cli_process(void);
 
 
 

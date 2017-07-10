@@ -40,11 +40,13 @@ int main(void)
     bsp_init();   
     
     // Start FreeRTOS scheduler.
-    vTaskStartScheduler();
+//    vTaskStartScheduler();
+    printf("start\r\n");
 
     while (true)
     {
-        APP_ERROR_HANDLER(NRF_ERROR_FORBIDDEN);
+        //APP_ERROR_HANDLER(NRF_ERROR_FORBIDDEN);
+        cli_process();
     }
 }
 
