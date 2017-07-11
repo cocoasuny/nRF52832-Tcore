@@ -3,7 +3,7 @@
   * @file    main.c
   * @author  Jason
   * @version V1.0.0
-  * @date    2017-7-27
+  * @date    2017-7-10
   * @brief   main program for nRF52832
   ****************************************************************************************
   * @attention
@@ -37,16 +37,19 @@ int main(void)
 {
     
     /* init for bsp */
-    bsp_init();   
+    bsp_init();
+
+    /* Tasks creat */
+    app_task_creat();
+    
+    printf("start...\r\n");
     
     // Start FreeRTOS scheduler.
-//    vTaskStartScheduler();
-    printf("start\r\n");
+    vTaskStartScheduler();
 
     while (true)
     {
-        //APP_ERROR_HANDLER(NRF_ERROR_FORBIDDEN);
-        cli_process();
+        APP_ERROR_HANDLER(NRF_ERROR_FORBIDDEN);
     }
 }
 

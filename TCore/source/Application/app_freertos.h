@@ -1,10 +1,10 @@
 /**
   ****************************************************************************************
-  * @file    common.h
+  * @file    freertos.h
   * @author  Jason
   * @version V1.0.0
-  * @date    2017-7-27
-  * @brief   common header
+  * @date    2017-7-11
+  * @brief   the header of freertos.c
   ****************************************************************************************
   * @attention
   *
@@ -12,21 +12,34 @@
   *
   ****************************************************************************************
   */
-  
-  
+
+
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __COMMON__
-#define __COMMON__
+#ifndef __APPFREERTOS__
+#define __APPFREERTOS__
 
-#include <stdint.h>
-#include <string.h>
-#include "app_freertos.h"
-#include "bsp.h"
-#include "platform.h"
+/* Includes ------------------------------------------------------------------*/
+#include "FreeRTOS.h"
+#include "task.h"
+#include "timers.h"
+#include "semphr.h"
 
-#endif // __COMMON__
 
+/* task stack and priority define */
+#define TASK_LOG_STACK                      256
+#define TASK_LOG_PRIORITY					2				
+
+
+
+
+/* function declares */
+void app_task_creat(void);
+
+
+
+#endif // __APPFREERTOS__
 
 /************************ (C) COPYRIGHT 2017 ShenZhen DBGJ Co., Ltd. *****END OF FILE****/
+
 
 
