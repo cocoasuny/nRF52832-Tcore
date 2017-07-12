@@ -19,6 +19,10 @@
 #define __PLATFORM__
 
 
+/* debug switch define */
+#define DEBUG_BLE_CONNECT
+
+
 /* gpio define for uart */
 #define RX_PIN_NUMBER               2
 #define TX_PIN_NUMBER               3

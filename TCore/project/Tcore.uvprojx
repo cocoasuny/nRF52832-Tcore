@@ -404,6 +404,11 @@
               <FileType>5</FileType>
               <FilePath>..\source\Application\sdk_config.h</FilePath>
             </File>
+            <File>
+              <FileName>platform.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\source\Application\platform.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
