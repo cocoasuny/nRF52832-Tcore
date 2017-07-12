@@ -87,7 +87,7 @@ void app_error_handler_bare(ret_code_t error_code)
         .err_code    = error_code,
     };
 
-    app_error_fault_handler(NRF_FAULT_ID_SDK_ERROR, 0, (uint32_t)(&error_info));
+    app_error_print(NRF_FAULT_ID_SDK_ERROR, 0, (uint32_t)(&error_info));
 
     UNUSED_VARIABLE(error_info);
 }

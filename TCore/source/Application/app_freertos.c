@@ -16,10 +16,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "app_freertos.h"
 #include "bsp_cli.h"
+#include "main.h"
+#include "ble_top_implement.h"
 
 /* private variables define */
 static TaskHandle_t 				m_logger_thread;					  	/**< Definition of Logger thread. */
-
+static TaskHandle_t 				m_ble_top_implementation_thread;      	/**< Definition of BLE stack thread. */
 
 /* private function declare*/
 static void logger_thread(void * arg);
@@ -50,6 +52,23 @@ static void logger_thread(void * arg)
   */
 void app_task_creat(void)
 {
+    
+	/* Init a semaphore for the BLE thread. */
+    g_semaphore_ble_event_ready = xSemaphoreCreateBinary();
+    if (NULL == g_semaphore_ble_event_ready)
+    {
+        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+    }
+
+	/* creat a thread for ble top level implementation*/
+	if(
+		pdPASS != xTaskCreate(ble_top_implementation_thread,"ble",BLE_TOP_IMPLEMENTATION_STACK,NULL,
+							  	BLE_TOP_IMPLEMENTATION_PRIORITY,&m_ble_top_implementation_thread)
+	)
+	{
+		APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+	}    
+    
 	/* creat a thread for logger */	
     if (pdPASS != xTaskCreate(logger_thread, "LOG", TASK_LOG_STACK, NULL, TASK_LOG_PRIORITY, &m_logger_thread))
     {

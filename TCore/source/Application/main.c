@@ -16,6 +16,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
+/* gloable variables define */
+SemaphoreHandle_t 			g_semaphore_ble_event_ready = NULL;				/**< Semaphore raised if there is a new event to be 
+																				processed in the BLE thread. */
+uint16_t  g_conn_handle = BLE_CONN_HANDLE_INVALID;                          /**< Handle of the current connection. */
+
+
+
 /**
   * @brief  vApplicationIdleHook
   * @param  None
