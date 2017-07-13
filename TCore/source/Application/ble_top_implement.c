@@ -32,10 +32,18 @@
 #include "ble_conn_state.h"
 #include "fstorage.h"
 #include "fds.h"
+#include "ble_hts.h"
+#include "ble_bas.h"
+#include "ble_dis.h"
 
 
-#define DEVICE_NAME                      "DBGJ_TCore"                           /**< Name of device. Will be included in the advertising data. */
-#define MANUFACTURER_NAME                "DBGJ"                  /**< Manufacturer. Will be passed to Device Information Service. */
+#define DEVICE_NAME                     "DBGJ_TCore"                            /**< Name of device. Will be included in the advertising data. */
+#define MANUFACTURER_NAME               "DBGJ"                                  /**< Manufacturer. Will be passed to Device Information Service. */
+#define MODEL_NUM                       "NS-HTS-EXAMPLE"                        /**< Model number. Will be passed to Device Information Service. */
+#define MANUFACTURER_ID                 0x1122334455                            /**< Manufacturer ID, part of System ID. Will be passed to Device Information Service. */
+#define ORG_UNIQUE_ID                   0x667788                                /**< Organizational Unique ID, part of System ID. Will be passed to Device Information Service. */
+
+
 #define APP_ADV_INTERVAL                 300                                    /**< The advertising interval (in units of 0.625 ms. This value corresponds to 187.5 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS       180                                    /**< The advertising time-out in units of seconds. */
 
@@ -57,13 +65,21 @@
 #define SEC_PARAM_MIN_KEY_SIZE           7                                      /**< Minimum encryption key size. */
 #define SEC_PARAM_MAX_KEY_SIZE           16                                     /**< Maximum encryption key size. */
 
+#define TEMP_TYPE_AS_CHARACTERISTIC      0                                      /**< Determines if temperature type is given as characteristic (1) or as a field of measurement (0). */
+
+
 #define APP_FEATURE_NOT_SUPPORTED        BLE_GATT_STATUS_ATTERR_APP_BEGIN + 2   /**< Reply when unsupported features are requested. */
 
 /* private variables declares */
 static nrf_ble_gatt_t m_gatt;                               /**< GATT module instance. */
+static ble_hts_t      m_hts;                                /**< Structure used to identify the health thermometer service. */
+static ble_bas_t      m_bas;                                /**< Structure used to identify the battery service. */
+
+
+
 static ble_uuid_t m_adv_uuids[] =                           /**< Universally unique service identifiers. */
 {
-    {BLE_UUID_HEART_RATE_SERVICE, BLE_UUID_TYPE_BLE},
+    {BLE_UUID_HEALTH_THERMOMETER_SERVICE, BLE_UUID_TYPE_BLE},
     {BLE_UUID_BATTERY_SERVICE, BLE_UUID_TYPE_BLE},
     {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}
 };
@@ -81,11 +97,11 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt);
 static void conn_params_init(void);
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
 static void conn_params_error_handler(uint32_t nrf_error);
-static void peer_manager_init(void);
-static void pm_evt_handler(pm_evt_t const * p_evt);
+//static void peer_manager_init(void);
+//static void pm_evt_handler(pm_evt_t const * p_evt);
 static void advertising_start(void);
 static void on_ble_evt(ble_evt_t * p_ble_evt);
-
+static void on_hts_evt(ble_hts_t * p_hts, ble_hts_evt_t * p_evt);
 
 /**
   * @brief  ble_top_implementation_thread 
@@ -104,7 +120,7 @@ void ble_top_implementation_thread(void * arg)
     advertising_init();
     services_init();
     conn_params_init();
-    peer_manager_init();
+    //peer_manager_init();
     advertising_start();
 
     while (1)
@@ -176,8 +192,63 @@ static void ble_stack_init(void)
  */
 static void services_init(void)
 {
+    ret_code_t       err_code;
+    ble_hts_init_t   hts_init;      //health thermomter service    
+    ble_bas_init_t   bas_init;      //battery service
+    ble_dis_init_t   dis_init;      //device information service
+    ble_dis_sys_id_t sys_id;
     
+    // Initialize Health Thermometer Service
+    memset(&hts_init, 0, sizeof(hts_init));
+
+    hts_init.evt_handler                 = on_hts_evt;
+    hts_init.temp_type_as_characteristic = TEMP_TYPE_AS_CHARACTERISTIC;
+    hts_init.temp_type                   = BLE_HTS_TEMP_TYPE_BODY;
+
+    // Here the sec level for the Health Thermometer Service can be changed/increased.
+    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&hts_init.hts_meas_attr_md.cccd_write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hts_init.hts_meas_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hts_init.hts_meas_attr_md.write_perm);
+
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hts_init.hts_temp_type_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hts_init.hts_temp_type_attr_md.write_perm);
+
+    err_code = ble_hts_init(&m_hts, &hts_init);
+    APP_ERROR_CHECK(err_code);
     
+    // Initialize Battery Service.
+    memset(&bas_init, 0, sizeof(bas_init));
+
+    // Here the sec level for the Battery Service can be changed/increased.
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_init.battery_level_char_attr_md.cccd_write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_init.battery_level_char_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&bas_init.battery_level_char_attr_md.write_perm);
+
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&bas_init.battery_level_report_read_perm);
+
+    bas_init.evt_handler          = NULL;
+    bas_init.support_notification = true;
+    bas_init.p_report_ref         = NULL;
+    bas_init.initial_batt_level   = 100;
+
+    err_code = ble_bas_init(&m_bas, &bas_init);
+    APP_ERROR_CHECK(err_code); 
+
+    // Initialize Device Information Service.
+    memset(&dis_init, 0, sizeof(dis_init));
+
+    ble_srv_ascii_to_utf8(&dis_init.manufact_name_str, MANUFACTURER_NAME);
+    ble_srv_ascii_to_utf8(&dis_init.model_num_str, MODEL_NUM);
+
+    sys_id.manufacturer_id            = MANUFACTURER_ID;
+    sys_id.organizationally_unique_id = ORG_UNIQUE_ID;
+    dis_init.p_sys_id                 = &sys_id;
+
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&dis_init.dis_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&dis_init.dis_attr_md.write_perm);
+
+    err_code = ble_dis_init(&dis_init);
+    APP_ERROR_CHECK(err_code);    
 }
 /**@brief Function for starting advertising.
  */
@@ -410,13 +481,19 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     switch (ble_adv_evt)
     {
         case BLE_ADV_EVT_FAST:
-//            NRF_LOG_INFO("Fast advertising.\r\n");
+            #ifdef DEBUG_BLE_CONNECT
+                printf("Fast advertising.\r\n");
+            #endif
 //            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
 //            APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_ADV_EVT_IDLE:
+            #ifdef DEBUG_BLE_CONNECT
+                printf("Adv IDLE\r\n");
+            #endif
 //            sleep_mode_enter();
+            advertising_start();
             break;
 
         default:
@@ -475,138 +552,165 @@ static void conn_params_error_handler(uint32_t nrf_error)
     APP_ERROR_HANDLER(nrf_error);
 }
 
-/**@brief Function for the Peer Manager initialization.
- */
-static void peer_manager_init(void)
-{
-    ble_gap_sec_params_t sec_param;
-    ret_code_t           err_code;
+///**@brief Function for the Peer Manager initialization.
+// */
+//static void peer_manager_init(void)
+//{
+//    ble_gap_sec_params_t sec_param;
+//    ret_code_t           err_code;
 
-    err_code = pm_init();
-    APP_ERROR_CHECK(err_code);
+//    err_code = pm_init();
+//    APP_ERROR_CHECK(err_code);
 
-    memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
+//    memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
 
-    // Security parameters to be used for all security procedures.
-    sec_param.bond           = SEC_PARAM_BOND;
-    sec_param.mitm           = SEC_PARAM_MITM;
-    sec_param.lesc           = SEC_PARAM_LESC;
-    sec_param.keypress       = SEC_PARAM_KEYPRESS;
-    sec_param.io_caps        = SEC_PARAM_IO_CAPABILITIES;
-    sec_param.oob            = SEC_PARAM_OOB;
-    sec_param.min_key_size   = SEC_PARAM_MIN_KEY_SIZE;
-    sec_param.max_key_size   = SEC_PARAM_MAX_KEY_SIZE;
-    sec_param.kdist_own.enc  = 1;
-    sec_param.kdist_own.id   = 1;
-    sec_param.kdist_peer.enc = 1;
-    sec_param.kdist_peer.id  = 1;
+//    // Security parameters to be used for all security procedures.
+//    sec_param.bond           = SEC_PARAM_BOND;
+//    sec_param.mitm           = SEC_PARAM_MITM;
+//    sec_param.lesc           = SEC_PARAM_LESC;
+//    sec_param.keypress       = SEC_PARAM_KEYPRESS;
+//    sec_param.io_caps        = SEC_PARAM_IO_CAPABILITIES;
+//    sec_param.oob            = SEC_PARAM_OOB;
+//    sec_param.min_key_size   = SEC_PARAM_MIN_KEY_SIZE;
+//    sec_param.max_key_size   = SEC_PARAM_MAX_KEY_SIZE;
+//    sec_param.kdist_own.enc  = 1;
+//    sec_param.kdist_own.id   = 1;
+//    sec_param.kdist_peer.enc = 1;
+//    sec_param.kdist_peer.id  = 1;
 
-    err_code = pm_sec_params_set(&sec_param);
-    APP_ERROR_CHECK(err_code);
+//    err_code = pm_sec_params_set(&sec_param);
+//    APP_ERROR_CHECK(err_code);
 
-    err_code = pm_register(pm_evt_handler);
-    APP_ERROR_CHECK(err_code);
-}
+//    err_code = pm_register(pm_evt_handler);
+//    APP_ERROR_CHECK(err_code);
+//}
 /**@brief Function for handling Peer Manager events.
  *
  * @param[in] p_evt  Peer Manager event.
  */
-static void pm_evt_handler(pm_evt_t const * p_evt)
+//static void pm_evt_handler(pm_evt_t const * p_evt)
+//{
+//    ret_code_t err_code;
+
+//    switch (p_evt->evt_id)
+//    {
+//        case PM_EVT_BONDED_PEER_CONNECTED:
+//        {
+//            #ifdef DEBUG_BLE_CONNECT
+//                printf("Connected to a previously bonded device.\r\n");
+//            #endif
+//        } break;
+
+//        case PM_EVT_CONN_SEC_SUCCEEDED:
+//        {
+//            #ifdef DEBUG_BLE_CONNECT
+//                printf("Connection secured: role: %d, conn_handle: 0x%x, procedure: %d.\r\n",
+//                             ble_conn_state_role(p_evt->conn_handle),
+//                             p_evt->conn_handle,
+//                             p_evt->params.conn_sec_succeeded.procedure);
+//            #endif
+//        } break;
+
+//        case PM_EVT_CONN_SEC_FAILED:
+//        {
+//            /* Often, when securing fails, it shouldn't be restarted, for security reasons.
+//             * Other times, it can be restarted directly.
+//             * Sometimes it can be restarted, but only after changing some Security Parameters.
+//             * Sometimes, it cannot be restarted until the link is disconnected and reconnected.
+//             * Sometimes it is impossible, to secure the link, or the peer device does not support it.
+//             * How to handle this error is highly application dependent. */
+//        } break;
+
+//        case PM_EVT_CONN_SEC_CONFIG_REQ:
+//        {
+//            // Reject pairing request from an already bonded peer.
+//            pm_conn_sec_config_t conn_sec_config = {.allow_repairing = false};
+//            pm_conn_sec_config_reply(p_evt->conn_handle, &conn_sec_config);
+//        } break;
+
+//        case PM_EVT_STORAGE_FULL:
+//        {
+//            // Run garbage collection on the flash.
+//            err_code = fds_gc();
+//            if (err_code == FDS_ERR_BUSY || err_code == FDS_ERR_NO_SPACE_IN_QUEUES)
+//            {
+//                // Retry.
+//            }
+//            else
+//            {
+//                APP_ERROR_CHECK(err_code);
+//            }
+//        } break;
+
+//        case PM_EVT_PEERS_DELETE_SUCCEEDED:
+//        {
+////            advertising_start(false);
+//        } break;
+
+//        case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
+//        {
+//            // The local database has likely changed, send service changed indications.
+//            pm_local_database_has_changed();
+//        } break;
+
+//        case PM_EVT_PEER_DATA_UPDATE_FAILED:
+//        {
+//            // Assert.
+//            APP_ERROR_CHECK(p_evt->params.peer_data_update_failed.error);
+//        } break;
+
+//        case PM_EVT_PEER_DELETE_FAILED:
+//        {
+//            // Assert.
+//            APP_ERROR_CHECK(p_evt->params.peer_delete_failed.error);
+//        } break;
+
+//        case PM_EVT_PEERS_DELETE_FAILED:
+//        {
+//            // Assert.
+//            APP_ERROR_CHECK(p_evt->params.peers_delete_failed_evt.error);
+//        } break;
+
+//        case PM_EVT_ERROR_UNEXPECTED:
+//        {
+//            // Assert.
+//            APP_ERROR_CHECK(p_evt->params.error_unexpected.error);
+//        } break;
+
+//        case PM_EVT_CONN_SEC_START:
+//        case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
+//        case PM_EVT_PEER_DELETE_SUCCEEDED:
+//        case PM_EVT_LOCAL_DB_CACHE_APPLIED:
+//        case PM_EVT_SERVICE_CHANGED_IND_SENT:
+//        case PM_EVT_SERVICE_CHANGED_IND_CONFIRMED:
+//        default:
+//            break;
+//    }
+//}
+
+/**@brief Function for handling the Health Thermometer Service events.
+ *
+ * @details This function will be called for all Health Thermometer Service events which are passed
+ *          to the application.
+ *
+ * @param[in] p_hts  Health Thermometer Service structure.
+ * @param[in] p_evt  Event received from the Health Thermometer Service.
+ */
+static void on_hts_evt(ble_hts_t * p_hts, ble_hts_evt_t * p_evt)
 {
-    ret_code_t err_code;
-
-    switch (p_evt->evt_id)
+    switch (p_evt->evt_type)
     {
-        case PM_EVT_BONDED_PEER_CONNECTED:
-        {
-            #ifdef DEBUG_BLE_CONNECT
-                printf("Connected to a previously bonded device.\r\n");
-            #endif
-        } break;
+        case BLE_HTS_EVT_INDICATION_ENABLED:
+            // Indication has been enabled, send a single temperature measurement
+//            temperature_measurement_send();
+            break;
 
-        case PM_EVT_CONN_SEC_SUCCEEDED:
-        {
-            #ifdef DEBUG_BLE_CONNECT
-                printf("Connection secured: role: %d, conn_handle: 0x%x, procedure: %d.\r\n",
-                             ble_conn_state_role(p_evt->conn_handle),
-                             p_evt->conn_handle,
-                             p_evt->params.conn_sec_succeeded.procedure);
-            #endif
-        } break;
+        case BLE_HTS_EVT_INDICATION_CONFIRMED:
+//            m_hts_meas_ind_conf_pending = false;
+            break;
 
-        case PM_EVT_CONN_SEC_FAILED:
-        {
-            /* Often, when securing fails, it shouldn't be restarted, for security reasons.
-             * Other times, it can be restarted directly.
-             * Sometimes it can be restarted, but only after changing some Security Parameters.
-             * Sometimes, it cannot be restarted until the link is disconnected and reconnected.
-             * Sometimes it is impossible, to secure the link, or the peer device does not support it.
-             * How to handle this error is highly application dependent. */
-        } break;
-
-        case PM_EVT_CONN_SEC_CONFIG_REQ:
-        {
-            // Reject pairing request from an already bonded peer.
-            pm_conn_sec_config_t conn_sec_config = {.allow_repairing = false};
-            pm_conn_sec_config_reply(p_evt->conn_handle, &conn_sec_config);
-        } break;
-
-        case PM_EVT_STORAGE_FULL:
-        {
-            // Run garbage collection on the flash.
-            err_code = fds_gc();
-            if (err_code == FDS_ERR_BUSY || err_code == FDS_ERR_NO_SPACE_IN_QUEUES)
-            {
-                // Retry.
-            }
-            else
-            {
-                APP_ERROR_CHECK(err_code);
-            }
-        } break;
-
-        case PM_EVT_PEERS_DELETE_SUCCEEDED:
-        {
-//            advertising_start(false);
-        } break;
-
-        case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
-        {
-            // The local database has likely changed, send service changed indications.
-            pm_local_database_has_changed();
-        } break;
-
-        case PM_EVT_PEER_DATA_UPDATE_FAILED:
-        {
-            // Assert.
-            APP_ERROR_CHECK(p_evt->params.peer_data_update_failed.error);
-        } break;
-
-        case PM_EVT_PEER_DELETE_FAILED:
-        {
-            // Assert.
-            APP_ERROR_CHECK(p_evt->params.peer_delete_failed.error);
-        } break;
-
-        case PM_EVT_PEERS_DELETE_FAILED:
-        {
-            // Assert.
-            APP_ERROR_CHECK(p_evt->params.peers_delete_failed_evt.error);
-        } break;
-
-        case PM_EVT_ERROR_UNEXPECTED:
-        {
-            // Assert.
-            APP_ERROR_CHECK(p_evt->params.error_unexpected.error);
-        } break;
-
-        case PM_EVT_CONN_SEC_START:
-        case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
-        case PM_EVT_PEER_DELETE_SUCCEEDED:
-        case PM_EVT_LOCAL_DB_CACHE_APPLIED:
-        case PM_EVT_SERVICE_CHANGED_IND_SENT:
-        case PM_EVT_SERVICE_CHANGED_IND_CONFIRMED:
         default:
+            // No implementation needed.
             break;
     }
 }
