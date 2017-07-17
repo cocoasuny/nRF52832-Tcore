@@ -30,7 +30,7 @@ static const nrf_cli_cmd_t m_cmd_set[] = {      //Command set array
         NRF_CLI_CMD("python", "python interpreter", nrf_cli_cmd_pyt),
 };
 
-NRF_CLI_DEF(m_cli_uart,    "nrf_cli:~$ ", nrf_cli_uart_transport, m_cmd_set);   //Command line interface instance
+NRF_CLI_DEF(m_cli_uart,    "tcore:~$ ", nrf_cli_uart_transport, m_cmd_set);   //Command line interface instance
 
 /**
   * @brief  initialize for CLI

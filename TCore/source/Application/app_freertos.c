@@ -18,10 +18,12 @@
 #include "bsp_cli.h"
 #include "main.h"
 #include "ble_top_implement.h"
+#include "measurement.h"
 
 /* private variables define */
 static TaskHandle_t 				m_logger_thread;					  	/**< Definition of Logger thread. */
 static TaskHandle_t 				m_ble_top_implementation_thread;      	/**< Definition of BLE stack thread. */
+static TaskHandle_t                 m_measurement_thread;                   /**< Definition of measurement thread. */
 
 /* private function declare*/
 static void logger_thread(void * arg);
@@ -73,7 +75,16 @@ void app_task_creat(void)
     if (pdPASS != xTaskCreate(logger_thread, "LOG", TASK_LOG_STACK, NULL, TASK_LOG_PRIORITY, &m_logger_thread))
     {
         APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
-    }    
+    }
+
+    /* creat a thread for measurement */
+	if(
+		pdPASS != xTaskCreate(measurement_thread,"meat",MEASUREMENT_STACK,NULL,
+							  	MEASUREMENT_PRIORITY,&m_measurement_thread)
+	)
+	{
+		APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+	}  
 }
 
 

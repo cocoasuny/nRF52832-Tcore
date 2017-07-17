@@ -21,14 +21,14 @@
 
 /* debug switch define */
 #define DEBUG_BLE_CONNECT
-
+#define DEBUG_TEMPERATURE
 
 /* gpio define for uart */
 #define RX_PIN_NUMBER               2
 #define TX_PIN_NUMBER               3
 #define CTS_PIN_NUMBER              7
 #define RTS_PIN_NUMBER              5
-#define HWFC                        true
+#define HWFC                        false
 
 
 

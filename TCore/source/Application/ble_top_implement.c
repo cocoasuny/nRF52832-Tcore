@@ -35,6 +35,7 @@
 #include "ble_hts.h"
 #include "ble_bas.h"
 #include "ble_dis.h"
+#include "measurement.h"
 
 
 #define DEVICE_NAME                     "DBGJ_TCore"                            /**< Name of device. Will be included in the advertising data. */
@@ -283,7 +284,9 @@ static uint32_t ble_new_event_handler(void)
 static void on_ble_evt(ble_evt_t * p_ble_evt)
 {
     uint32_t err_code;
-
+    const TickType_t 		xMaxBlockTime = pdMS_TO_TICKS(300); /* 设置最大等待时间为 300ms */
+    TEM_MSG_T 				temQueueMsgValue;
+    
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
@@ -292,6 +295,10 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             #endif
 
             g_conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
+            /* start core temperature measure */
+            temQueueMsgValue.eventID = EVENT_START_CORETEM_MEASURE;
+            xQueueSend(measureMentEventQueue,(void *)&temQueueMsgValue,xMaxBlockTime);  
+        
             break; // BLE_GAP_EVT_CONNECTED
 
         case BLE_GAP_EVT_DISCONNECTED:
@@ -301,6 +308,10 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
         
             g_conn_handle = BLE_CONN_HANDLE_INVALID;
             advertising_start();
+        
+            /* stop core temperature measure */
+            temQueueMsgValue.eventID = EVENT_STOP_CORETEM_MEASURE;
+            xQueueSend(measureMentEventQueue,(void *)&temQueueMsgValue,xMaxBlockTime);          
             break; // BLE_GAP_EVT_DISCONNECTED
 
         case BLE_GATTC_EVT_TIMEOUT:

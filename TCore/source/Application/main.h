@@ -24,10 +24,14 @@
 #include "ble_types.h"
 
 
+#define OFF					0
+#define ON					1
+
+
 /* gloable variables declare */
 extern SemaphoreHandle_t 			g_semaphore_ble_event_ready;
 extern uint16_t                     g_conn_handle;  
-
+extern QueueHandle_t			    measureMentEventQueue;     
 
 
 #endif // __MAIN__

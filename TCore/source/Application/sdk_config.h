@@ -1198,7 +1198,7 @@
 // <i> This settings means only that components for DCDC regulator are installed and it can be enabled.
 
 #ifndef POWER_CONFIG_DEFAULT_DCDCEN
-#define POWER_CONFIG_DEFAULT_DCDCEN 0
+#define POWER_CONFIG_DEFAULT_DCDCEN 1
 #endif
 
 // <q> POWER_CONFIG_DEFAULT_DCDCENHV  - The default configuration of High Voltage DCDC regulator
@@ -3761,12 +3761,12 @@
 
 // <o> NRF_CLI_UART_TX_BUF_SIZE - TX FIFO size. 
 #ifndef NRF_CLI_UART_TX_BUF_SIZE
-#define NRF_CLI_UART_TX_BUF_SIZE 64
+#define NRF_CLI_UART_TX_BUF_SIZE 512
 #endif
 
 // <s> NRF_CLI_UART_RX_BUF_SIZE - RX FIFO size.
 #ifndef NRF_CLI_UART_RX_BUF_SIZE
-#define NRF_CLI_UART_RX_BUF_SIZE 64
+#define NRF_CLI_UART_RX_BUF_SIZE 512
 #endif
 
 

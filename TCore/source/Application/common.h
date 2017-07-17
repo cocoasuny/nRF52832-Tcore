@@ -23,6 +23,7 @@
 #include "app_freertos.h"
 #include "bsp.h"
 #include "platform.h"
+#include "main.h"
 
 #endif // __COMMON__
 

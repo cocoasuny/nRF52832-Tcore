@@ -38,7 +38,7 @@ void bsp_init(void)
     /* init for cli,and start */
     ret = cli_init();
     APP_ERROR_CHECK(ret);
-    cli_start();
+//    cli_start();
 }
 
 

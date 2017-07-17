@@ -310,7 +310,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>4</Optim>
+            <Optim>1</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -388,6 +388,11 @@
               <FileName>app_freertos.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\source\Application\app_freertos.c</FilePath>
+            </File>
+            <File>
+              <FileName>measurement.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\Application\measurement.c</FilePath>
             </File>
             <File>
               <FileName>ble_top_implement.c</FileName>

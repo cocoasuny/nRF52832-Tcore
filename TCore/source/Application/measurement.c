@@ -1,0 +1,186 @@
+/**
+  ****************************************************************************************
+  * @file    measurement.c
+  * @author  Jason
+  * @version V1.0.0
+  * @date    2017-7-13
+  * @brief   the implement of menasure
+  ****************************************************************************************
+  * @attention
+  *
+  * <h2><center>&copy; COPYRIGHT 2017 ShenZhen DBGJ Co., Ltd.</center></h2>
+  *
+  ****************************************************************************************
+  */
+
+/* Includes ------------------------------------------------------------------*/
+#include "measurement.h"
+#include "app_freertos.h"
+
+
+/* private variable declare */
+static TimerHandle_t				temSampleTime = NULL;
+static uint16_t 					gSubFuncState = OFF;
+
+/* private function declare */
+static void temperature_sampleTimer_cb(xTimerHandle pxTimer);
+
+/**
+  * @brief  measurement_thread
+  * @note   测量任务
+  * @param  pvParameters
+  * @retval None    
+  */
+void measurement_thread(void *pvParameters)
+{
+	const TickType_t 		xMaxBlockTime = pdMS_TO_TICKS(300); /* 设置最大等待时间为 300ms */
+	TEM_MSG_T 				temQueueMsgValue;
+//	uint32_t                Rt = 0;
+//    uint32_t                TH2Rt = 0;
+//    uint32_t                TH1Rt = 0;
+//	float					TH2 = 0;
+//	float					TH1 = 0;
+	
+	/* creat event queue for core temperature */
+	measureMentEventQueue = xQueueCreate(MEASUREMENT_EVENT_QUEUE_SIZE,sizeof(TEM_MSG_T));
+	#ifdef DEBUG_TEMPERATURE
+		if(measureMentEventQueue == NULL)
+		{
+			printf("temperature queue creat fail\r\n");
+		}
+	#endif
+		
+	/* temperture event queue init */
+	temQueueMsgValue.eventID = EVENT_TEMPERATURE_DEFAULT;
+	gMeasurement_stat_set(TEMPERATURE_MEASURE_STATUS,OFF);
+	
+	while(1)
+	{
+		if(pdPASS == xQueueReceive(measureMentEventQueue,(void *)&temQueueMsgValue,xMaxBlockTime))
+		{
+			/* 接收到消息，对消息事件进行处理 */
+			switch(temQueueMsgValue.eventID)
+			{
+				case EVENT_START_CORETEM_MEASURE:
+				{				
+                    #ifdef DEBUG_TEMPERATURE
+                        printf("start core temperature\r\n");
+                    #endif
+					/* init core temperature measure arithmetic */
+//					alg_core_temperature_calculate_init();
+					
+					/* start the time for temperature measure freq */
+					if(temSampleTime != NULL)
+					{
+						xTimerDelete(temSampleTime,0);
+					}
+					temSampleTime = xTimerCreate("temTime",TEM_SAMPLE_PER,pdTRUE,(void *)0,temperature_sampleTimer_cb);
+					xTimerStart(temSampleTime,0);
+					
+					gMeasurement_stat_set(TEMPERATURE_MEASURE_STATUS,ON);
+				}
+				break;
+				case EVENT_GET_CORETEM_RESULT:
+				{
+                    #ifdef DEBUG_TEMPERATURE
+                        printf("get core temperature\r\n");
+                    #endif                    
+					if(
+                        (gMeasurement_stat_get(TEMPERATURE_MEASURE_STATUS) != OFF)  &&
+                        (g_conn_handle != BLE_CONN_HANDLE_INVALID)
+                    )
+					{
+						/* core temperature sample */
+//                        core_temperature_rt_sample(&TH2Rt,&TH1Rt);
+
+						/* core temperature measure and update the value */
+//						ntc_temperature_calculate(TH2Rt,&TH2,NTC_10K);
+//						ntc_temperature_calculate(TH1Rt,&TH1,NTC_10K);
+						
+						/* calculate the core temperature through TH1,TH2 */
+//						core_temperature_calculate(TH1,TH2,&g_TemVal);
+						#ifdef DEBUG_TEMPERATURE
+//							printf("core tem val:%0.1f\r\n",g_TemVal);
+						#endif
+
+                        /* handle with the core temperature result */
+//                        temQueueMsgValue.eventID = EVENT_HANDLE_CORETEM_RESULT;
+//                        xQueueSend(measureMentEventQueue,(void *)&temQueueMsgValue,xMaxBlockTime);  
+					}
+				}
+				break;
+                case EVENT_HANDLE_CORETEM_RESULT:
+                {
+                    /* handle with the core temperature result */
+                    #ifdef DEBUG_TEMPERATURE
+                        printf("ble transmit the core tem result:\r\n");
+                    #endif
+                }
+                break;
+				case EVENT_STOP_CORETEM_MEASURE:
+				{
+                    #ifdef DEBUG_TEMPERATURE
+                        printf("stop core temperature\r\n");
+                    #endif                    
+					xTimerDelete(temSampleTime,0);
+					temSampleTime = NULL;
+					gMeasurement_stat_set(TEMPERATURE_MEASURE_STATUS,OFF);
+				}
+				break;                
+				default:break;
+			}
+		}
+	}    
+}
+
+/**
+  * @brief  gMeasurement_stat_set
+  * @note   设置测量状态
+  * @param  mask,newState
+  * @retval None    
+  */
+void gMeasurement_stat_set(uint16_t mask, uint8_t newState)
+{
+	gSubFuncState = (newState == OFF)? gSubFuncState & (~mask) : gSubFuncState | mask;
+}
+/**
+  * @brief  gMeasurement_stat_get
+  * @note   获取测量状态
+  * @param  mask
+  * @retval status    
+  */
+uint16_t gMeasurement_stat_get(uint16_t mask)
+{
+	return(gSubFuncState & mask);
+}
+
+
+/**
+  * @brief  temperature_sampleTimer_cb
+  * @note   Tcore测量定时器回调函数，用于控制温度测量频率
+  * @param  pxTimer
+  * @retval None    
+  */
+static void temperature_sampleTimer_cb(xTimerHandle pxTimer)
+{
+	TEM_MSG_T 				temQueueMsgValue;
+	BaseType_t              xHigherPriorityTaskWoken = pdFALSE;
+    
+	pxTimer = pxTimer;
+	
+    if(gMeasurement_stat_get(TEMPERATURE_MEASURE_STATUS) != OFF)
+    {        
+        temQueueMsgValue.eventID = EVENT_GET_CORETEM_RESULT;
+    }
+    else    //the measurement of thermometer is off
+    {
+        temQueueMsgValue.eventID = EVENT_STOP_CORETEM_MEASURE;      
+    }
+    xQueueSendFromISR(measureMentEventQueue,(void *)&temQueueMsgValue,&xHigherPriorityTaskWoken);
+    if(xHigherPriorityTaskWoken == pdTRUE)
+    {
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+}
+/************************ (C) COPYRIGHT 2017 ShenZhen DBGJ Co., Ltd. *****END OF FILE****/
+

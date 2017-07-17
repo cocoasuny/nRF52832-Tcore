@@ -19,7 +19,8 @@
 /* gloable variables define */
 SemaphoreHandle_t 			g_semaphore_ble_event_ready = NULL;				/**< Semaphore raised if there is a new event to be 
 																				processed in the BLE thread. */
-uint16_t  g_conn_handle = BLE_CONN_HANDLE_INVALID;                          /**< Handle of the current connection. */
+uint16_t                    g_conn_handle = BLE_CONN_HANDLE_INVALID;        /**< Handle of the current connection. */
+QueueHandle_t			    measureMentEventQueue = NULL;                   //event queue for measurement
 
 
 
@@ -49,7 +50,10 @@ int main(void)
     /* Tasks creat */
     app_task_creat();
     
-    printf("start...\r\n");
+//    printf("start...\r\n");
+    
+    /* Activate deep sleep mode */
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;    
     
     // Start FreeRTOS scheduler.
     vTaskStartScheduler();
