@@ -44,16 +44,14 @@ void vApplicationIdleHook( void )
 int main(void)
 {
     
-    /* init for bsp */
-    bsp_init();
-
-    /* Tasks creat */
-    app_task_creat();
+    /* init for system */
+    sys_init();
     
-//    printf("start...\r\n");
+    /* Tasks creat */
+    main_task_start();
     
     /* Activate deep sleep mode */
-    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;    
+//    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;    
     
     // Start FreeRTOS scheduler.
     vTaskStartScheduler();

@@ -62,7 +62,7 @@ static ret_code_t cli_uart_init(void)
 
     const app_uart_comm_params_t comm_params =
       {
-          RX_PIN_NUMBER,
+          RX_PIN_NUMBER, 
           TX_PIN_NUMBER,
           RTS_PIN_NUMBER,
           CTS_PIN_NUMBER,

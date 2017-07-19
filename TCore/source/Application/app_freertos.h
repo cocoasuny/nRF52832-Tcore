@@ -37,8 +37,7 @@
 
 
 /* function declares */
-void app_task_creat(void);
-
+void main_task_start(void);
 
 
 #endif // __APPFREERTOS__

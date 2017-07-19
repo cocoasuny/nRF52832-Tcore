@@ -18,12 +18,12 @@
 
 
 /**
-  * @brief  bsp_init
-  * @note   the init of bsp
+  * @brief  sys_init
+  * @note   the init of system
   * @param  None
   * @retval None
   */
-void bsp_init(void)
+void sys_init(void)
 {
     ret_code_t ret = NRF_ERROR_NULL;
     
@@ -34,13 +34,7 @@ void bsp_init(void)
     /* init for power */
     ret = nrf_drv_power_init(NULL);
     APP_ERROR_CHECK(ret);
-
-    /* init for cli,and start */
-    ret = cli_init();
-    APP_ERROR_CHECK(ret);
-//    cli_start();
 }
-
 
 
 

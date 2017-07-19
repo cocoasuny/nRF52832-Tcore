@@ -22,11 +22,15 @@
 
 /* private variables define */
 static TaskHandle_t 				m_logger_thread;					  	/**< Definition of Logger thread. */
+static TaskHandle_t 				m_creat_task_thread;					/**< Definition of creat task thread. */
 static TaskHandle_t 				m_ble_top_implementation_thread;      	/**< Definition of BLE stack thread. */
 static TaskHandle_t                 m_measurement_thread;                   /**< Definition of measurement thread. */
 
 /* private function declare*/
 static void logger_thread(void * arg);
+static void app_task_creat(void);
+static void creat_task_thread(void * arg);
+
 
 /**@brief Thread for handling the logger.
  *
@@ -38,13 +42,45 @@ static void logger_thread(void * arg);
  */
 static void logger_thread(void * arg)
 {
+    ret_code_t ret = NRF_ERROR_NULL;
+    
     UNUSED_PARAMETER(arg);
+    
+    /* init for cli,and start */
+    ret = cli_init();
+    APP_ERROR_CHECK(ret);
+    cli_start();
 
     while(1)
     {
         cli_process();
-		vTaskDelay(100);
+		vTaskDelay(50);
     }
+}
+
+/**@brief Thread for handling the creat tasks and bsp initalize.
+ *
+ * @details This thread is responsible for processing log entries if logs are deferred.
+ *          Thread flushes all log entries and suspends. It is resumed by idle task hook.
+ *
+ * @param[in]   arg   Pointer used for passing some arbitrary information (context) from the
+ *                    osThreadCreate() call to the thread.
+ */
+static void creat_task_thread(void * arg)
+{
+    ret_code_t ret = NRF_ERROR_NULL;
+    
+    UNUSED_PARAMETER(arg);
+    
+    /* bsp init */
+    
+    /* creat tasks */
+    app_task_creat();
+    
+    UNUSED_PARAMETER(ret);
+    
+    /* delete the creat task */
+    vTaskDelete(m_creat_task_thread);
 }
 
 /**
@@ -52,7 +88,7 @@ static void logger_thread(void * arg)
   * @param  None
   * @retval None
   */
-void app_task_creat(void)
+static void app_task_creat(void)
 {
     
 	/* Init a semaphore for the BLE thread. */
@@ -70,13 +106,7 @@ void app_task_creat(void)
 	{
 		APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 	}    
-    
-	/* creat a thread for logger */	
-    if (pdPASS != xTaskCreate(logger_thread, "LOG", TASK_LOG_STACK, NULL, TASK_LOG_PRIORITY, &m_logger_thread))
-    {
-        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
-    }
-
+      
     /* creat a thread for measurement */
 	if(
 		pdPASS != xTaskCreate(measurement_thread,"meat",MEASUREMENT_STACK,NULL,
@@ -85,6 +115,25 @@ void app_task_creat(void)
 	{
 		APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 	}  
+}
+/**
+  * @brief  start the main task to start the system
+  * @param  None
+  * @retval None
+  */
+void main_task_start(void)
+{
+	/* creat a thread for logger */	
+    if (pdPASS != xTaskCreate(logger_thread, "LOG", TASK_LOG_STACK, NULL, TASK_LOG_PRIORITY, &m_logger_thread))
+    {
+        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+    }
+    
+	/* creat a thread for creat tasks */	
+    if (pdPASS != xTaskCreate(creat_task_thread, "CTT", TASK_LOG_STACK, NULL, 1, &m_creat_task_thread))
+    {
+        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+    }    
 }
 
 

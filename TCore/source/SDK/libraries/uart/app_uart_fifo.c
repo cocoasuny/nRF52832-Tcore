@@ -172,7 +172,7 @@ uint32_t app_uart_init(const app_uart_comm_params_t * p_comm_params,
         {
             nrf_drv_uart_rx_enable(&app_uart_inst);
         }
-
+        
         return nrf_drv_uart_rx(&app_uart_inst, rx_buffer,1);
     }
     else

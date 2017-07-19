@@ -17,12 +17,13 @@
 #include "nrf_drv_clock.h"
 #include "nrf_drv_power.h"
 #include "bsp_cli.h"
+#include "bsp_uart.h"
 
 
 
 /* function declares */
-void bsp_init(void);
-
+void sys_init(void);
+void uart_init(void);
 
 
 

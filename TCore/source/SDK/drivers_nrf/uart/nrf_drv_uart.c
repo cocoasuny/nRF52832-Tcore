@@ -44,6 +44,7 @@
 #include "nrf_drv_common.h"
 #include "nrf_gpio.h"
 #include "app_util_platform.h"
+#include "common.h"
 
 #define NRF_LOG_MODULE_NAME "UART"
 
@@ -957,6 +958,7 @@ __STATIC_INLINE void uarte_irq_handler(NRF_UARTE_Type * p_uarte, uart_control_bl
 #if UART0_ENABLED
 void UART0_IRQHandler(void)
 {
+    portENTER_CRITICAL();
     CODE_FOR_UARTE_INT
     (
         UART0_INSTANCE_INDEX,
@@ -966,6 +968,7 @@ void UART0_IRQHandler(void)
     (
         uart_irq_handler(NRF_UART0, &m_cb[UART0_INSTANCE_INDEX]);
     )
+    portEXIT_CRITICAL();
 }
 #endif
 
