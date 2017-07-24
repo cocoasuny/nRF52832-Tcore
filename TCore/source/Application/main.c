@@ -51,7 +51,7 @@ int main(void)
     main_task_start();
     
     /* Activate deep sleep mode */
-//    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;    
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;    
     
     // Start FreeRTOS scheduler.
     vTaskStartScheduler();
