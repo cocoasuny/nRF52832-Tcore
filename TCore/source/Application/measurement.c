@@ -17,6 +17,7 @@
 #include "measurement.h"
 #include "app_freertos.h"
 #include "ble_hts.h"
+#include "battery_management.h"
 
 
 /* private define */
@@ -114,6 +115,9 @@ void measurement_thread(void *pvParameters)
                         /* for test */
                         static uint8_t i = 0;
                         i++;
+                        
+                        /* for test, update the battery level */
+                        ble_battery_level_transmit(i);
                         
                         /* package the result of core temperature */
                         core_temperature_result_package(&m_healthThermometerValue,i);
