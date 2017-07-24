@@ -21,8 +21,9 @@ SemaphoreHandle_t 			g_semaphore_ble_event_ready = NULL;				/**< Semaphore raise
 																				processed in the BLE thread. */
 uint16_t                    g_conn_handle = BLE_CONN_HANDLE_INVALID;        /**< Handle of the current connection. */
 QueueHandle_t			    measureMentEventQueue = NULL;                   //event queue for measurement
-
-
+ble_hts_t                   g_hts;                                          /**< Structure used to identify the health thermometer service. */
+ble_bas_t                   g_bas;                                          /**< Structure used to identify the battery service. */
+            
 
 /**
   * @brief  vApplicationIdleHook

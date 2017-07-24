@@ -16,14 +16,21 @@
 /* Includes ------------------------------------------------------------------*/
 #include "measurement.h"
 #include "app_freertos.h"
+#include "ble_hts.h"
 
+
+/* private define */
+#define TEMP_TYPE_AS_CHARACTERISTIC     0                   /**< Determines if temperature type is given as characteristic (1) 
+                                                                or as a field of measurement (0). */
 
 /* private variable declare */
 static TimerHandle_t				temSampleTime = NULL;
 static uint16_t 					gSubFuncState = OFF;
+static ble_hts_meas_t               m_healthThermometerValue;               
 
 /* private function declare */
 static void temperature_sampleTimer_cb(xTimerHandle pxTimer);
+static void core_temperature_result_package(ble_hts_meas_t * p_meas, float Val);
 
 /**
   * @brief  measurement_thread
@@ -40,6 +47,7 @@ void measurement_thread(void *pvParameters)
 //    uint32_t                TH1Rt = 0;
 //	float					TH2 = 0;
 //	float					TH1 = 0;
+    ret_code_t              err_code = NRF_ERROR_NULL;
 	
 	/* creat event queue for core temperature */
 	measureMentEventQueue = xQueueCreate(MEASUREMENT_EVENT_QUEUE_SIZE,sizeof(TEM_MSG_T));
@@ -102,10 +110,17 @@ void measurement_thread(void *pvParameters)
 						#ifdef DEBUG_TEMPERATURE
 //							printf("core tem val:%0.1f\r\n",g_TemVal);
 						#endif
-
+                        
+                        /* for test */
+                        static uint8_t i = 0;
+                        i++;
+                        
+                        /* package the result of core temperature */
+                        core_temperature_result_package(&m_healthThermometerValue,i);
+                        
                         /* handle with the core temperature result */
-//                        temQueueMsgValue.eventID = EVENT_HANDLE_CORETEM_RESULT;
-//                        xQueueSend(measureMentEventQueue,(void *)&temQueueMsgValue,xMaxBlockTime);  
+                        temQueueMsgValue.eventID = EVENT_HANDLE_CORETEM_RESULT;
+                        xQueueSend(measureMentEventQueue,(void *)&temQueueMsgValue,xMaxBlockTime);  
 					}
 				}
 				break;
@@ -115,6 +130,16 @@ void measurement_thread(void *pvParameters)
                     #ifdef DEBUG_TEMPERATURE
                         printf("ble transmit the core tem result:\r\n");
                     #endif
+                    
+                    if(
+                        (gMeasurement_stat_get(TEMPERATURE_MEASURE_STATUS) != OFF)  &&
+                        (g_conn_handle != BLE_CONN_HANDLE_INVALID)
+                    )
+                    {                    
+                        /* transmit the core temperature result */
+                        err_code = ble_hts_measurement_send(&g_hts, &m_healthThermometerValue);
+                        APP_ERROR_CHECK(err_code);
+                    }
                 }
                 break;
 				case EVENT_STOP_CORETEM_MEASURE:
@@ -182,5 +207,28 @@ static void temperature_sampleTimer_cb(xTimerHandle pxTimer)
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
+/**
+  * @brief  core_temperature_result_package
+  * @note   核心温度结果打包   
+  * @param[out]  ble_hts_meas_t * p_meas
+  * @param[in]  float Val
+  * @retval None    
+  */
+static void core_temperature_result_package(ble_hts_meas_t * p_meas, float Val)
+{
+    static ble_date_time_t time_stamp = { 2012, 12, 5, 11, 50, 0 };
+
+    p_meas->temp_in_fahr_units = false;
+    p_meas->time_stamp_present = true;
+    p_meas->temp_type_present  = (TEMP_TYPE_AS_CHARACTERISTIC ? false : true);
+
+    p_meas->temp_in_celcius.exponent = -2;
+    p_meas->temp_in_celcius.mantissa = Val;
+    p_meas->temp_in_fahr.exponent    = -2;
+    p_meas->temp_in_fahr.mantissa    = (32 * 100) + ((Val * 9) / 5);
+    p_meas->time_stamp               = time_stamp;
+    p_meas->temp_type                = BLE_HTS_TEMP_TYPE_BODY;    
+}
+
 /************************ (C) COPYRIGHT 2017 ShenZhen DBGJ Co., Ltd. *****END OF FILE****/
 

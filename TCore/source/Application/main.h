@@ -22,6 +22,8 @@
 #include <string.h>
 #include "common.h"
 #include "ble_types.h"
+#include "ble_hts.h"
+#include "ble_bas.h"
 
 
 #define OFF					0
@@ -32,7 +34,8 @@
 extern SemaphoreHandle_t 			g_semaphore_ble_event_ready;
 extern uint16_t                     g_conn_handle;  
 extern QueueHandle_t			    measureMentEventQueue;     
-
+extern ble_hts_t                    g_hts;                       /**< Structure used to identify the health thermometer service. */
+extern ble_bas_t                    g_bas;                       /**< Structure used to identify the battery service. */
 
 #endif // __MAIN__
 

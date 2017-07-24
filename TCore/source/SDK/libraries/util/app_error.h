@@ -177,7 +177,7 @@ static __INLINE void app_error_print(uint32_t id, uint32_t pc, uint32_t info)
         case NRF_FAULT_ID_SDK_ERROR:
             printf("Line Number: %u\r\n",   tmp = ((error_info_t *)(info))->line_num);
             printf("File Name:   %s\r\n",         ((error_info_t *)(info))->p_file_name);
-            printf("Error Code:  0x%X\r\n", tmp = ((error_info_t *)(info))->err_code);
+            printf("Error Code:  0x%x\r\n", tmp = ((error_info_t *)(info))->err_code);
             break;
     }
 }
