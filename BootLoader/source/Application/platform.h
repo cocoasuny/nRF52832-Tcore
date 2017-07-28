@@ -21,7 +21,14 @@
 
 /* debug switch define */
 
-
+/* gpio and buffer define for uart */
+#define RETARGET_ENABLED	1
+#ifndef UART_TX_BUF_SIZE
+    #define UART_TX_BUF_SIZE 1024         /**< UART TX buffer size. */
+#endif
+#ifndef UART_RX_BUF_SIZE
+    #define UART_RX_BUF_SIZE 1            /**< UART RX buffer size. */
+#endif
 /* gpio define for uart */
 #define RX_PIN_NUMBER               2
 #define TX_PIN_NUMBER               3

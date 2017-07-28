@@ -56,6 +56,7 @@
 #include "app_error.h"
 #include "app_error_weak.h"
 #include "nrf_bootloader_info.h"
+#include "bsp_uart.h"
 
 void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info)
 {
@@ -102,7 +103,10 @@ int main(void)
 
     leds_init();
     buttons_init();
-
+    uart_init();
+    
+    printf("start...\r\n");
+    
     ret_val = nrf_bootloader_init();
     APP_ERROR_CHECK(ret_val);
 
