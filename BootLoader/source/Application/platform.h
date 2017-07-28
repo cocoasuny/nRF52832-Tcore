@@ -18,8 +18,13 @@
 #ifndef __PLATFORM__
 #define __PLATFORM__
 
+/* includes */
+#include <stdint.h>
 
 /* debug switch define */
+#define BOOTLOADER_TOP_LEVEL_DEBUG
+
+
 
 /* gpio and buffer define for uart */
 #define RETARGET_ENABLED	1

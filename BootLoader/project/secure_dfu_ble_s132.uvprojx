@@ -335,7 +335,7 @@
               <MiscControls>--reduce_paths</MiscControls>
               <Define>BLE_STACK_SUPPORT_REQD BOARD_PCA10040 CONFIG_GPIO_AS_PINRESET NRF52 NRF52832_XXAA NRF52_PAN_12 NRF52_PAN_15 NRF52_PAN_20 NRF52_PAN_31 NRF52_PAN_36 NRF52_PAN_51 NRF52_PAN_54 NRF52_PAN_55 NRF52_PAN_58 NRF52_PAN_64 NRF52_PAN_74 NRF_DFU_DEBUG_VERSION NRF_DFU_SETTINGS_VERSION=1 NRF_SD_BLE_API_VERSION=4 S132 SOFTDEVICE_PRESENT SVC_INTERFACE_CALL_AS_NORMAL_FUNCTION SWI_DISABLE0 __HEAP_SIZE=0</Define>
               <Undefine></Undefine>
-              <IncludePath>..\source\Application;..\source\dfu_req_handling;..\source\MiddleWare\micro-ecc\nrf52_keil;..\source\MiddleWare\nano-pb\generator;..\source\MiddleWare\nano-pb;..\source\MiddleWare;..\source\SDK;..\source\SDK\ble;..\source\SDK\libraries\bootloader;..\source\SDK\libraries\bootloader\dfu;..\source\SDK\libraries\bootloader\ble_dfu;..\source\SDK\libraries\bootloader\serial_dfu;..\source\SDK\softdevice\common;..\source\SDK\softdevice\s132\headers;..\source\SDK\softdevice\s132\headers\nrf52;..\source\SDK\libraries\log;..\source\SDK\libraries\log\src;..\source\SDK\libraries\util;..\source\SDK\libraries\fstorage;..\source\SDK\libraries\strerror;..\source\SDK\libraries\experimental_section_vars;..\source\SDK\libraries\timer;..\source\SDK\ble\common;..\source\SDK\libraries\crc32;..\source\SDK\libraries\crypto;..\source\SDK\libraries\crypto\backend;..\source\SDK\libraries\crypto\backend\micro_ecc;..\source\SDK\drivers_nrf\hal;..\source\SDK\softdevice\common\softdevice_handler;..\source\SDK\drivers_nrf\delay;..\source\SDK\libraries\scheduler;..\source\SDK\drivers_nrf\common;..\source\SDK\libraries\queue;..\source\SDK\drivers_nrf\rng;..\source\SDK\libraries\crypto\backend\nrf_crypto_sw;..\source\SDK\libraries\mem_manager;..\source\SDK\libraries\sha256;..\source\MiddleWare\micro-ecc\micro-ecc;..\source\SDK\libraries\uart;..\source\SDK\libraries\uart;..\source\SDK\libraries\fifo;..\source\SDK\drivers_nrf\uart;..\source\BSP</IncludePath>
+              <IncludePath>..\source\Application;..\source\dfu_req_handling;..\source\MiddleWare\micro-ecc\nrf52_keil;..\source\MiddleWare\nano-pb\generator;..\source\MiddleWare\nano-pb;..\source\MiddleWare;..\source\SDK;..\source\SDK\ble;..\source\SDK\libraries\bootloader;..\source\SDK\libraries\bootloader\dfu;..\source\SDK\libraries\bootloader\ble_dfu;..\source\SDK\libraries\bootloader\serial_dfu;..\source\SDK\softdevice\common;..\source\SDK\softdevice\s132\headers;..\source\SDK\softdevice\s132\headers\nrf52;..\source\SDK\libraries\log;..\source\SDK\libraries\log\src;..\source\SDK\libraries\util;..\source\SDK\libraries\fstorage;..\source\SDK\libraries\strerror;..\source\SDK\libraries\experimental_section_vars;..\source\SDK\libraries\timer;..\source\SDK\ble\common;..\source\SDK\libraries\crc32;..\source\SDK\libraries\crypto;..\source\SDK\libraries\crypto\backend;..\source\SDK\libraries\crypto\backend\micro_ecc;..\source\SDK\drivers_nrf\hal;..\source\SDK\softdevice\common\softdevice_handler;..\source\SDK\drivers_nrf\delay;..\source\SDK\libraries\scheduler;..\source\SDK\drivers_nrf\common;..\source\SDK\libraries\queue;..\source\SDK\drivers_nrf\rng;..\source\SDK\libraries\crypto\backend\nrf_crypto_sw;..\source\SDK\libraries\mem_manager;..\source\SDK\libraries\sha256;..\source\MiddleWare\micro-ecc\micro-ecc;..\source\SDK\libraries\uart;..\source\SDK\libraries\uart;..\source\SDK\libraries\fifo;..\source\SDK\drivers_nrf\uart;..\source\BSP;..\source\SDK\libraries\hardfault;..\source\SDK\libraries\hardfault\nrf52\handler</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -413,6 +413,11 @@
               <FileName>platform.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\source\Application\platform.h</FilePath>
+            </File>
+            <File>
+              <FileName>hardfault_implementation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\SDK\libraries\hardfault\hardfault_implementation.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -618,6 +623,11 @@
               <FileName>app_fifo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\source\SDK\libraries\fifo\app_fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardfault_handler_keil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\SDK\libraries\hardfault\nrf52\handler\hardfault_handler_keil.c</FilePath>
             </File>
           </Files>
         </Group>

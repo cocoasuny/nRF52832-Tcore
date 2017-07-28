@@ -38,13 +38,14 @@
  * 
  */
 #include "nrf_bootloader.h"
-
+#include <stdio.h>
 #include "compiler_abstraction.h"
 #include "nrf.h"
 #include "nrf_bootloader_app_start.h"
 #include "nrf_log.h"
 #include "nrf_dfu.h"
 #include "nrf_error.h"
+#include "platform.h"
 
 
 /** @brief Weak implemenation of nrf_dfu_init
@@ -75,7 +76,9 @@ __WEAK uint32_t nrf_dfu_init_user(void)
 
 uint32_t nrf_bootloader_init(void)
 {
-    NRF_LOG_DEBUG("In nrf_bootloader_init\r\n");
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("In nrf_bootloader_init\r\n");
+    #endif
 
     uint32_t ret_val = NRF_SUCCESS;
 
@@ -95,6 +98,8 @@ uint32_t nrf_bootloader_init(void)
         return ret_val;
     }
 
-    NRF_LOG_DEBUG("After nrf_bootloader_init\r\n");
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("After nrf_bootloader_init\r\n");
+    #endif
     return ret_val;
 }

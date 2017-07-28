@@ -103,6 +103,8 @@ void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p
  */
 void app_error_handler_bare(ret_code_t error_code);
 
+void app_error_handler_test(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
+
 /**@brief       Function for saving the parameters and entering an eternal loop, for debug purposes.
  *
  * @param[in] id    Fault identifier. See @ref NRF_FAULT_IDS.
@@ -192,13 +194,13 @@ static __INLINE void app_error_print(uint32_t id, uint32_t pc, uint32_t info)
 #define APP_ERROR_HANDLER(ERR_CODE)                                    \
     do                                                                 \
     {                                                                  \
-        app_error_handler((ERR_CODE), __LINE__, (uint8_t*) __FILE__);  \
+        app_error_handler_test((ERR_CODE), __LINE__, (uint8_t*) __FILE__);  \
     } while (0)
 #else
 #define APP_ERROR_HANDLER(ERR_CODE)                                    \
     do                                                                 \
     {                                                                  \
-        app_error_handler_bare((ERR_CODE));                            \
+      app_error_handler_test((ERR_CODE),__LINE__, (uint8_t*) __FILE__);                            \
     } while (0)
 #endif
 /**@brief Macro for calling error handler function if supplied error code any other than NRF_SUCCESS.

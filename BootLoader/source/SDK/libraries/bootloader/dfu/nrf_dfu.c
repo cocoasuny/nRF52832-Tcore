@@ -55,6 +55,9 @@
 #ifndef SOFTDEVICE_PRESENT
 #include "nrf_soc.h"
 #endif
+#include "platform.h"
+#include <stdio.h>
+
 
 #define SCHED_MAX_EVENT_DATA_SIZE       MAX(APP_TIMER_SCHED_EVENT_DATA_SIZE, 0)                 /**< Maximum size of scheduler events. */
 #define BOOTLOADER_DFU_START            0xB1                                                    /**< Magic value written to retention register when starting DFU buttonless. */
@@ -149,7 +152,9 @@ uint32_t nrf_dfu_init()
     uint32_t ret_val = NRF_SUCCESS;
     uint32_t enter_bootloader_mode = 0;
 
-    NRF_LOG_DEBUG("In real nrf_dfu_init\r\n");
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("In real nrf_dfu_init\r\n");
+    #endif
 
     nrf_dfu_settings_init();
     timers_init();
@@ -159,7 +164,9 @@ uint32_t nrf_dfu_init()
     ret_val = nrf_dfu_continue(&enter_bootloader_mode);
     if(ret_val != NRF_SUCCESS)
     {
-        NRF_LOG_DEBUG("Could not continue DFU operation: 0x%08x\r\n", ret_val);
+        #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+            printf("Could not continue DFU operation: 0x%08x\r\n", ret_val);
+        #endif
         enter_bootloader_mode = 1;
     }
 
@@ -167,7 +174,9 @@ uint32_t nrf_dfu_init()
     // besides the effect of the continuation
     if (nrf_dfu_enter_check())
     {
-        NRF_LOG_DEBUG("Application sent bootloader request\n");
+        #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+            printf("Application sent bootloader request\n");
+        #endif
         enter_bootloader_mode = 1;
     }
 
@@ -181,7 +190,9 @@ uint32_t nrf_dfu_init()
         ret_val = nrf_dfu_transports_init();
         if (ret_val != NRF_SUCCESS)
         {
-            NRF_LOG_ERROR("Could not initalize DFU transport: 0x%08x\r\n", ret_val);
+            #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+                printf("Could not initalize DFU transport: 0x%08x\r\n", ret_val);
+            #endif
             return ret_val;
         }
 
@@ -195,11 +206,15 @@ uint32_t nrf_dfu_init()
 
     if (nrf_dfu_app_is_valid())
     {
-        NRF_LOG_DEBUG("Jumping to: 0x%08x\r\n", MAIN_APPLICATION_START_ADDR);
+        #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+            printf("Jumping to: 0x%08x\r\n", MAIN_APPLICATION_START_ADDR);
+        #endif
         nrf_bootloader_app_start(MAIN_APPLICATION_START_ADDR);
     }
 
     // Should not be reached!
-    NRF_LOG_INFO("After real nrf_dfu_init\r\n");
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("After real nrf_dfu_init\r\n");
+    #endif
     return NRF_SUCCESS;
 }

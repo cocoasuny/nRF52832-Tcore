@@ -68,8 +68,21 @@ void app_error_handler_bare(uint32_t error_code)
 {
     (void)error_code;
     NRF_LOG_ERROR("Received an error: 0x%08x!\r\n", error_code);
-    NVIC_SystemReset();
+    NVIC_SystemReset();   
 }
+
+/**@brief Function for error handling, which is called when an error has occurred.
+ *
+ * @param[in] error_code  Error code supplied to the handler.
+ * @param[in] line_num    Line number where the handler is called.
+ * @param[in] p_file_name Pointer to the file name.
+ */
+void app_error_handler_test(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name)
+{
+    printf("Line Number: %u",line_num);
+    printf("File Name:   %s",p_file_name);
+    printf("Error Code:  0x%X\r\n", error_code);    
+} 
 
 
 /**@brief Function for initialization of LEDs.
@@ -96,17 +109,21 @@ static void buttons_init(void)
 int main(void)
 {
     uint32_t ret_val;
-
+    
     (void) NRF_LOG_INIT(NULL);
-
-    NRF_LOG_INFO("Inside main\r\n");
 
     leds_init();
     buttons_init();
     uart_init();
     
-    printf("start...\r\n");
-    
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("start...\r\n");
+    #endif
+
+//    /*****Trigger Hard fault handler for test  *****/
+//    *(uint8_t *)(0xFFFFFFFF) = 0;
+//    /************************/
+
     ret_val = nrf_bootloader_init();
     APP_ERROR_CHECK(ret_val);
 
@@ -116,7 +133,9 @@ int main(void)
     nrf_bootloader_app_start(MAIN_APPLICATION_START_ADDR);
 
     // Should never be reached.
-    NRF_LOG_INFO("After main\r\n");
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("After main\r\n");
+    #endif
 }
 
 /**
