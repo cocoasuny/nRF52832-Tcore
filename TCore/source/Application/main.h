@@ -24,6 +24,7 @@
 #include "ble_types.h"
 #include "ble_hts.h"
 #include "ble_bas.h"
+#include "ble_dfu.h"
 
 
 #define OFF					0
@@ -36,6 +37,8 @@ extern uint16_t                     g_conn_handle;
 extern QueueHandle_t			    measureMentEventQueue;     
 extern ble_hts_t                    g_hts;                       /**< Structure used to identify the health thermometer service. */
 extern ble_bas_t                    g_bas;                       /**< Structure used to identify the battery service. */
+extern ble_dfu_t                    g_dfus;                                         /**< Structure used to identify the DFU service. */ 
+
 
 #endif // __MAIN__
 

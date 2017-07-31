@@ -23,7 +23,7 @@ uint16_t                    g_conn_handle = BLE_CONN_HANDLE_INVALID;        /**<
 QueueHandle_t			    measureMentEventQueue = NULL;                   //event queue for measurement
 ble_hts_t                   g_hts;                                          /**< Structure used to identify the health thermometer service. */
 ble_bas_t                   g_bas;                                          /**< Structure used to identify the battery service. */
-            
+ble_dfu_t                   g_dfus;                                         /**< Structure used to identify the DFU service. */            
 
 /**
   * @brief  vApplicationIdleHook
