@@ -38,7 +38,8 @@
  * 
  */
 #include "nrf_dfu.h"
-
+#include "platform.h"
+#include <stdio.h>
 #include "nrf_dfu_transport.h"
 #include "nrf_dfu_utils.h"
 #include "nrf_bootloader_app_start.h"
@@ -55,8 +56,7 @@
 #ifndef SOFTDEVICE_PRESENT
 #include "nrf_soc.h"
 #endif
-#include "platform.h"
-#include <stdio.h>
+
 
 
 #define SCHED_MAX_EVENT_DATA_SIZE       MAX(APP_TIMER_SCHED_EVENT_DATA_SIZE, 0)                 /**< Maximum size of scheduler events. */

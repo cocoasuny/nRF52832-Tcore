@@ -38,7 +38,8 @@
  * 
  */
 #include "dfu_req_handling.h"
-
+#include "platform.h"
+#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "nrf_dfu_req_handler.h"
@@ -243,14 +244,18 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
 #endif
         if (p_init->has_hw_version == false)
         {
-            NRF_LOG_ERROR("No HW version\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("No HW version\r\n");
+			#endif
             return ext_error_set(NRF_DFU_EXT_ERROR_INIT_COMMAND_INVALID);
         }
 
         // Check of init command HW version
         if(p_init->hw_version != hw_version)
         {
-            NRF_LOG_ERROR("Faulty HW version\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Faulty HW version\r\n");
+			#endif
             return ext_error_set(NRF_DFU_EXT_ERROR_HW_VERSION_FAILURE);
         }
 
@@ -259,6 +264,7 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         bool found_sd_ver = false;
         for(int i = 0; i < p_init->sd_req_count; i++)
         {
+			printf("rx version:0x%x,local version:0x%x\r\n",p_init->sd_req[i],SD_FWID_GET(MBR_SIZE));
             if (p_init->sd_req[i] == SD_FWID_GET(MBR_SIZE))
             {
                 found_sd_ver = true;
@@ -267,7 +273,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         }
         if (!found_sd_ver)
         {
-            NRF_LOG_ERROR("SD req not met\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("SD req not met\r\n");
+			#endif
             return ext_error_set(NRF_DFU_EXT_ERROR_SD_VERSION_FAILURE);
         }
 #endif
@@ -298,11 +306,15 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
                 break;
 
             default:
-                NRF_LOG_INFO("Unknown FW update type\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Unknown FW update type\r\n");
+				#endif
                 return ext_error_set(NRF_DFU_EXT_ERROR_INIT_COMMAND_INVALID);
         }
-
-        NRF_LOG_INFO("Req version: %d, Expected: %d\r\n", p_init->fw_version, fw_version);
+	
+		#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+			printf("Req version: %d, Expected: %d\r\n", p_init->fw_version, fw_version);
+		#endif
 
         // Check of init command FW version
         switch (p_init->type)
@@ -310,7 +322,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
             case DFU_FW_TYPE_APPLICATION:
                 if (p_init->fw_version < fw_version)
                 {
-                    NRF_LOG_ERROR("FW version too low\r\n");
+					#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+						printf("FW version too low\r\n");
+					#endif
                     return ext_error_set(NRF_DFU_EXT_ERROR_FW_VERSION_FAILURE);
                 }
                 break;
@@ -320,7 +334,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
                 // updating the bootloader is stricter. There must be an increase in version number
                 if (p_init->fw_version <= fw_version)
                 {
-                    NRF_LOG_ERROR("BL FW version too low\r\n");
+					#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+						printf("BL FW version too low\r\n");
+					#endif
                     return ext_error_set(NRF_DFU_EXT_ERROR_FW_VERSION_FAILURE);
                 }
                 break;
@@ -349,8 +365,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
                 NRF_LOG_INFO("\r\n");
                 #endif
 
-
-                NRF_LOG_INFO("Calculating init packet hash\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Calculating init packet hash\r\n");
+				#endif
                 err_code = nrf_crypto_hash_compute(hash_info_sha256, p_init_cmd, init_cmd_len, &init_packet_hash);
                 if (err_code != NRF_SUCCESS)
                 {
@@ -374,20 +391,28 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
                 //NRF_LOG_INFO("signature len: %d\r\n", p_command->signature.size);
 
                 // calculate the signature
-                NRF_LOG_INFO("Verify signature\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Verify signature\r\n");
+				#endif
                 err_code = nrf_crypto_ecdsa_verify_hash(sig_info_p256, &crypto_key_pk, &init_packet_hash, &crypto_sig);
                 if (err_code != NRF_SUCCESS)
                 {
-                    NRF_LOG_ERROR("Signature failed\r\n");
+					#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+						printf("Signature failed\r\n");
+					#endif
                     return NRF_DFU_RES_CODE_INVALID_OBJECT;
                 }
 
-                NRF_LOG_INFO("Image verified\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Image verified\r\n");
+				#endif
             }
             break;
 
         default:
-            NRF_LOG_INFO("Invalid signature type\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Invalid signature type\r\n");
+			#endif
             return ext_error_set(NRF_DFU_EXT_ERROR_WRONG_SIGNATURE_TYPE);
     }
 
@@ -399,7 +424,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         case DFU_FW_TYPE_APPLICATION:
             if (p_init->has_app_size == false)
             {
-                NRF_LOG_ERROR("No app image size\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("No app image size\r\n");
+				#endif
                 return ext_error_set(NRF_DFU_EXT_ERROR_INIT_COMMAND_INVALID);
             }
             m_firmware_size_req += p_init->app_size;
@@ -408,7 +435,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         case DFU_FW_TYPE_BOOTLOADER:
             if (p_init->has_bl_size == false)
             {
-                NRF_LOG_ERROR("No bl image size\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("No bl image size\r\n");
+				#endif
                 return ext_error_set(NRF_DFU_EXT_ERROR_INIT_COMMAND_INVALID);
             }
             m_firmware_size_req += p_init->bl_size;
@@ -419,7 +448,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
             if (p_init->bl_size > NRF_MBR_PARAMS_PAGE_ADDRESS - BOOTLOADER_START_ADDR)
 #endif
             {
-                NRF_LOG_ERROR("BL too large\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("BL too large\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
             }
             break;
@@ -427,7 +458,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         case DFU_FW_TYPE_SOFTDEVICE:
             if (p_init->has_sd_size == false)
             {
-                NRF_LOG_ERROR("No SD image size\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("No SD image size\r\n");
+				#endif
                 return ext_error_set(NRF_DFU_EXT_ERROR_INIT_COMMAND_INVALID);
             }
             m_firmware_size_req += p_init->sd_size;
@@ -436,13 +469,17 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
         case DFU_FW_TYPE_SOFTDEVICE_BOOTLOADER:
             if (p_init->has_bl_size == false || p_init->has_sd_size == false)
             {
-                NRF_LOG_ERROR("NO BL/SD size\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("NO BL/SD size\r\n");
+				#endif
                 return ext_error_set(NRF_DFU_EXT_ERROR_INIT_COMMAND_INVALID);
             }
             m_firmware_size_req += p_init->sd_size + p_init->bl_size;
             if (p_init->sd_size == 0 || p_init->bl_size == 0)
             {
-                NRF_LOG_ERROR("BL+SD size 0\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("BL+SD size 0\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INVALID_PARAMETER;
             }
 
@@ -453,17 +490,23 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
             if (p_init->bl_size > NRF_MBR_PARAMS_PAGE_ADDRESS - BOOTLOADER_START_ADDR)
 #endif
             {
-                NRF_LOG_ERROR("BL too large (SD+BL)\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("BL too large (SD+BL)\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
             }
             break;
 
         default:
-            NRF_LOG_ERROR("Unknown FW update type\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Unknown FW update type\r\n");
+			#endif
             return ext_error_set(NRF_DFU_EXT_ERROR_INIT_COMMAND_INVALID);
     }
 
-    NRF_LOG_INFO("Running hash check\r\n");
+	#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+		printf("Running hash check\r\n");
+	#endif
     // SHA256 is the only supported hash
     memcpy(fw_hash.p_value, &p_init->hash.hash.bytes[0], NRF_CRYPTO_HASH_SIZE_SHA256);
 
@@ -471,7 +514,9 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
     // Validate its content.
     if (m_firmware_size_req == 0)
     {
-        NRF_LOG_ERROR("No FW size\r\n");
+		#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+			printf("No FW size\r\n");
+		#endif
         return NRF_DFU_RES_CODE_INVALID_PARAMETER;
     }
 
@@ -479,13 +524,17 @@ static nrf_dfu_res_code_t dfu_handle_prevalidate(dfu_signed_command_t const * p_
     err_code = nrf_dfu_find_cache(m_firmware_size_req, false, &m_firmware_start_addr);
     if (err_code != NRF_SUCCESS)
     {
-        NRF_LOG_ERROR("Can't find room for update\r\n");
+		#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+			printf("Can't find room for update\r\n");
+		#endif
         return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
     }
 
-    NRF_LOG_INFO("Write address set to 0x%08x\r\n", m_firmware_start_addr);
+	#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+		printf("Write address set to 0x%08x\r\n", m_firmware_start_addr);
 
-    NRF_LOG_INFO("DFU prevalidate SUCCESSFUL!\r\n");
+		printf("DFU prevalidate SUCCESSFUL!\r\n");
+	#endif
 
     return NRF_DFU_RES_CODE_SUCCESS;
 }
@@ -679,10 +728,14 @@ static nrf_dfu_res_code_t dfu_handle_signed_command(dfu_signed_command_t const *
     ret_val = dfu_handle_prevalidate(p_command, p_stream, init_packet_data.p_value, init_packet_data.length);
     if(ret_val == NRF_DFU_RES_CODE_SUCCESS)
     {
-        NRF_LOG_INFO("Prevalidate OK.\r\n");
+		#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+			printf("Prevalidate OK.\r\n");
+		#endif
 
         // This saves the init command to flash
-        NRF_LOG_INFO("Saving init command...\r\n");
+		#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+			printf("Saving init command...\r\n");
+		#endif
         if (nrf_dfu_settings_write(NULL) != NRF_SUCCESS)
         {
             return NRF_DFU_RES_CODE_OPERATION_FAILED;
@@ -690,7 +743,9 @@ static nrf_dfu_res_code_t dfu_handle_signed_command(dfu_signed_command_t const *
     }
     else
     {
-        NRF_LOG_ERROR("Prevalidate failed!\r\n");
+		#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+			printf("Prevalidate failed:0x%01x\r\n",ret_val);
+		#endif
     }
     return ret_val;
 }
@@ -739,7 +794,9 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
     switch (p_req->req_type)
     {
         case NRF_DFU_OBJECT_OP_CREATE:
-            NRF_LOG_INFO("Before OP create command\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Before OP create command\r\n");
+			#endif
             if(p_req->object_size == 0)
             {
                 return NRF_DFU_RES_CODE_INVALID_PARAMETER;
@@ -751,7 +808,9 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
                 return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
             }
 
-            NRF_LOG_INFO("Valid Command Create\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Valid Command Create\r\n");
+			#endif
             APP_ERROR_CHECK( app_timer_stop(nrf_dfu_utils_reset_delay_timer) );
 
             // Setting DFU to uninitialized.
@@ -766,13 +825,17 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
             break;
 
         case NRF_DFU_OBJECT_OP_CRC:
-            NRF_LOG_INFO("Valid Command CRC\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Valid Command CRC\r\n");
+			#endif
             p_res->offset = s_dfu_settings.progress.command_offset;
             p_res->crc = s_dfu_settings.progress.command_crc;
             break;
 
         case NRF_DFU_OBJECT_OP_WRITE:
-            NRF_LOG_INFO("Before OP write command\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Before OP write command\r\n");
+			#endif
 
             if ((p_req->req_len + s_dfu_settings.progress.command_offset) > s_dfu_settings.progress.command_size)
 
@@ -780,7 +843,9 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
                 // Too large for the command that was requested
                 p_res->offset = s_dfu_settings.progress.command_offset;
                 p_res->crc = s_dfu_settings.progress.command_crc;
-                NRF_LOG_ERROR("Error. Init command larger than expected. \r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Error. Init command larger than expected. \r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INVALID_PARAMETER;
             }
 
@@ -796,15 +861,21 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
             break;
 
         case NRF_DFU_OBJECT_OP_EXECUTE:
-            NRF_LOG_INFO("Before OP execute command\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Before OP execute command\r\n");
+			#endif
             if (s_dfu_settings.progress.command_offset != s_dfu_settings.progress.command_size)
             {
                 // The object wasn't the right (requested) size
-                NRF_LOG_ERROR("Execute with faulty offset\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Execute with faulty offset\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
             }
 
-            NRF_LOG_INFO("Valid command execute\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Valid command execute\r\n");
+			#endif
 
             if (m_valid_init_packet_present)
             {
@@ -826,38 +897,50 @@ static nrf_dfu_res_code_t nrf_dfu_command_req(void * p_context, nrf_dfu_req_t * 
             // We have a valid DFU packet
             if (packet.has_signed_command)
             {
-                NRF_LOG_INFO("Handling signed command\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Handling signed command\r\n");
+				#endif
                 ret_val = dfu_handle_signed_command(&packet.signed_command, &stream);
             }
             else if (packet.has_command)
             {
-                NRF_LOG_INFO("Handling unsigned command\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Handling unsigned command\r\n");
+				#endif
                 ret_val = dfu_handle_command(&packet.command);
             }
             else
             {
                 // We had no regular or signed command.
-                NRF_LOG_ERROR("Decoded command but it has no content!!\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Decoded command but it has no content!!\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INVALID_OBJECT;
             }
 
             if (ret_val == NRF_DFU_RES_CODE_SUCCESS)
             {
                 // Setting DFU to initialized
-                NRF_LOG_INFO("Setting DFU flag to initialized\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Setting DFU flag to initialized\r\n");
+				#endif
                 m_valid_init_packet_present = true;
             }
             break;
 
         case NRF_DFU_OBJECT_OP_SELECT:
-            NRF_LOG_INFO("Valid Command: NRF_DFU_OBJECT_OP_SELECT\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Valid Command: NRF_DFU_OBJECT_OP_SELECT\r\n");
+			#endif
             p_res->crc = s_dfu_settings.progress.command_crc;
             p_res->offset = s_dfu_settings.progress.command_offset;
             p_res->max_size = INIT_COMMAND_MAX_SIZE;
             break;
 
         default:
-            NRF_LOG_ERROR("Invalid Command Operation\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Invalid Command Operation\r\n");
+			#endif
             ret_val = NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED;
             break;
     }
@@ -881,7 +964,9 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
     switch (p_req->req_type)
     {
         case NRF_DFU_OBJECT_OP_CREATE:
-            NRF_LOG_INFO("Before OP create\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Before OP create\r\n");
+			#endif
 
             if (p_req->object_size == 0)
             {
@@ -893,31 +978,42 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
             if ( (p_req->object_size & (CODE_PAGE_SIZE - 1)) != 0 &&
                 (s_dfu_settings.progress.firmware_image_offset_last + p_req->object_size != m_firmware_size_req) )
             {
-                NRF_LOG_ERROR("Trying to create an object with a size that is not page aligned\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Trying to create an object with a size that is not page aligned\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INVALID_PARAMETER;
             }
 
             if (p_req->object_size > DATA_OBJECT_MAX_SIZE)
             {
                 // It is impossible to handle the command because the size is too large
-                NRF_LOG_ERROR("Invalid size for object (too large)\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Invalid size for object (too large)\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INSUFFICIENT_RESOURCES;
             }
 
             if (m_valid_init_packet_present == false)
             {
                 // Can't accept data because DFU isn't initialized by init command.
-                NRF_LOG_ERROR("Trying to create data object without valid init command\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Trying to create data object without valid init command\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
             }
 
             if ((s_dfu_settings.progress.firmware_image_offset_last + p_req->object_size) > m_firmware_size_req)
             {
-                NRF_LOG_ERROR("Trying to create an object of size %d, when offset is 0x%08x and firmware size is 0x%08x\r\n", p_req->object_size, s_dfu_settings.progress.firmware_image_offset_last, m_firmware_size_req);
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Trying to create an object of size %d, when offset is 0x%08x and firmware size is 0x%08x\r\n", 
+								p_req->object_size, s_dfu_settings.progress.firmware_image_offset_last, m_firmware_size_req);
+				#endif
                 return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
             }
 
-            NRF_LOG_INFO("Valid Data Create\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Valid Data Create\r\n");
+			#endif
 
 
             s_dfu_settings.progress.firmware_image_crc    = s_dfu_settings.progress.firmware_image_crc_last;
@@ -937,11 +1033,18 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
             if (nrf_dfu_flash_erase((uint32_t*)(m_firmware_start_addr + s_dfu_settings.progress.firmware_image_offset), CEIL_DIV(p_req->object_size, CODE_PAGE_SIZE), dfu_data_write_handler) != FS_SUCCESS)
             {
                 m_flash_operations_pending--;
-                NRF_LOG_ERROR("Erase operation failed\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Erase operation failed\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INVALID_OBJECT;
             }
-
-            NRF_LOG_INFO("Creating object with size: %d. Offset: 0x%08x, CRC: 0x%08x\r\n", s_dfu_settings.progress.data_object_size, s_dfu_settings.progress.firmware_image_offset, s_dfu_settings.progress.firmware_image_crc);
+	
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Creating object with size: %d. Offset: 0x%08x, CRC: 0x%08x\r\n", 
+												s_dfu_settings.progress.data_object_size, 
+												s_dfu_settings.progress.firmware_image_offset, 
+												s_dfu_settings.progress.firmware_image_crc);
+			#endif
 
             break;
 
@@ -964,7 +1067,9 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
             if ((p_req->req_len + s_dfu_settings.progress.firmware_image_offset - s_dfu_settings.progress.firmware_image_offset_last) > s_dfu_settings.progress.data_object_size)
             {
                 // Can't accept data because too much data has been received.
-                NRF_LOG_ERROR("Write request too long\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Write request too long\r\n");
+				#endif
                 return NRF_DFU_RES_CODE_INVALID_PARAMETER;
             }
 
@@ -1004,14 +1109,18 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
                 ++m_flash_operations_pending;
                 if (nrf_dfu_flash_store(p_write_addr, (uint32_t*)&m_data_buf[m_current_data_buffer][0], CEIL_DIV(m_data_buf_pos,4), dfu_data_write_handler) == FS_SUCCESS)
                 {
-                    NRF_LOG_INFO("Storing %d B at: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+					#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+						printf("Storing %d B at: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+					#endif
                     // Pre-calculate Offset + CRC assuming flash operation went OK
                     s_dfu_settings.write_offset += m_data_buf_pos;
                 }
                 else
                 {
                     --m_flash_operations_pending;
-                    NRF_LOG_ERROR("!!! Failed storing %d B at address: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+					#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+						printf("!!! Failed storing %d B at address: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+					#endif
                     // Previous flash operation failed. Revert CRC and offset.
                     s_dfu_settings.progress.firmware_image_crc = s_dfu_settings.progress.firmware_image_crc_last;
                     s_dfu_settings.progress.firmware_image_offset = s_dfu_settings.progress.firmware_image_offset_last;
@@ -1044,13 +1153,17 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
                 ++m_flash_operations_pending;
                 if (nrf_dfu_flash_store(p_write_addr, (uint32_t*)&m_data_buf[m_current_data_buffer][0], CEIL_DIV(m_data_buf_pos,4), dfu_data_write_handler) == FS_SUCCESS)
                 {
-                    NRF_LOG_INFO("Storing %d B at: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+					#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+						printf("Storing %d B at: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+					#endif
                     s_dfu_settings.write_offset += m_data_buf_pos;
                 }
                 else
                 {
                     --m_flash_operations_pending;
-                    NRF_LOG_ERROR("!!! Failed storing %d B at address: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+					#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+						printf("!!! Failed storing %d B at address: 0x%08x\r\n", m_data_buf_pos, (uint32_t)p_write_addr);
+					#endif
                     // Previous flash operation failed. Revert CRC and offset.
                     s_dfu_settings.progress.firmware_image_crc = s_dfu_settings.progress.firmware_image_crc_last;
                     s_dfu_settings.progress.firmware_image_offset = s_dfu_settings.progress.firmware_image_offset_last;
@@ -1079,11 +1192,17 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
                 s_dfu_settings.progress.firmware_image_offset_last)
             {
                 // The size of the written object was not as expected.
-                NRF_LOG_ERROR("Invalid data here: exp: %d, got: %d\r\n", s_dfu_settings.progress.data_object_size, s_dfu_settings.progress.firmware_image_offset - s_dfu_settings.progress.firmware_image_offset_last);
-                return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Invalid data here: exp: %d, got: %d\r\n", 
+									s_dfu_settings.progress.data_object_size, 
+									s_dfu_settings.progress.firmware_image_offset - s_dfu_settings.progress.firmware_image_offset_last);
+                #endif
+				return NRF_DFU_RES_CODE_OPERATION_NOT_PERMITTED;
             }
 
-            NRF_LOG_INFO("Valid Data Execute\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Valid Data Execute\r\n");
+			#endif
 
             // Update the offset and crc values for the last object written.
             s_dfu_settings.progress.data_object_size = 0;
@@ -1096,26 +1215,35 @@ static nrf_dfu_res_code_t nrf_dfu_data_req(void * p_context, nrf_dfu_req_t * p_r
 
             if (s_dfu_settings.progress.firmware_image_offset == m_firmware_size_req)
             {
-                NRF_LOG_INFO("Waiting for %d pending flash operations before doing postvalidate.\r\n", m_flash_operations_pending);
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Waiting for %d pending flash operations before doing postvalidate.\r\n", 
+							m_flash_operations_pending);
+				#endif
                 while(m_flash_operations_pending)
                 {
                     nrf_dfu_wait();
                 }
                 // Received the whole image. Doing postvalidate.
-                NRF_LOG_INFO("Doing postvalidate\r\n");
+				#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+					printf("Doing postvalidate\r\n");
+				#endif
                 ret_val = nrf_dfu_postvalidate(&packet.signed_command.command.init);
             }
             break;
 
         case NRF_DFU_OBJECT_OP_SELECT:
-            NRF_LOG_INFO("Valid Data Read info\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Valid Data Read info\r\n");
+			#endif
             p_res->crc = s_dfu_settings.progress.firmware_image_crc;
             p_res->offset = s_dfu_settings.progress.firmware_image_offset;
             p_res->max_size = DATA_OBJECT_MAX_SIZE;
             break;
 
         default:
-            NRF_LOG_ERROR("Invalid Data Operation\r\n");
+			#ifdef BOOTLOADER_DFU_HANDING_DEBUG
+				printf("Invalid Data Operation\r\n");
+			#endif
             ret_val = NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED;
             break;
     }
@@ -1208,7 +1336,9 @@ nrf_dfu_res_code_t nrf_dfu_req_handler_on_req(void * p_context, nrf_dfu_req_t * 
             break;
 
         default:
-            NRF_LOG_ERROR("Invalid request type\r\n");
+			#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+				printf("Invalid request type\r\n");
+			#endif
             ret_val = NRF_DFU_RES_CODE_INVALID_OBJECT;
             break;
     }

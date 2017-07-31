@@ -23,6 +23,8 @@
 
 /* debug switch define */
 #define BOOTLOADER_TOP_LEVEL_DEBUG
+#define BOOTLOADER_DFU_TRANSLATION_DEBUG
+#define BOOTLOADER_DFU_HANDING_DEBUG
 
 
 

@@ -54,6 +54,7 @@
 #include "nrf_delay.h"
 #include "nrf_dfu_handling_error.h"
 #include "platform.h"
+#include <stdio.h>
 
 #define ADVERTISING_LED_PIN_NO              BSP_LED_0                                               /**< Is on when device is advertising. */
 #define CONNECTED_LED_PIN_NO                BSP_LED_1                                               /**< Is on when device has connected. */
@@ -276,7 +277,9 @@ static uint32_t response_send(ble_dfu_t          * p_dfu,
 {
     uint16_t index = 0;
 
-    NRF_LOG_DEBUG("Sending Response: [0x%01x, 0x%01x]\r\n", op_code, resp_val);
+	#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+		printf("Sending Response: [0x%01x, 0x%01x]\r\n", op_code, resp_val);
+	#endif
 
 #ifndef NRF51
     if (p_dfu == NULL)
@@ -416,7 +419,9 @@ static uint32_t on_ctrl_pt_write(ble_dfu_t * p_dfu, ble_gatts_evt_write_t * p_bl
                                      NRF_DFU_RES_CODE_INVALID_PARAMETER);
             }
 
-            NRF_LOG_DEBUG("Received create object\r\n");
+			#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+				printf("Received create object\r\n");
+			#endif
 
             // Reset the packet receipt notification on create object
             m_pkt_notif_target_cnt = m_pkt_notif_target;
@@ -438,7 +443,9 @@ static uint32_t on_ctrl_pt_write(ble_dfu_t * p_dfu, ble_gatts_evt_write_t * p_bl
             return response_send(p_dfu, BLE_DFU_OP_CODE_CREATE_OBJECT, res_code);
 
         case BLE_DFU_OP_CODE_EXECUTE_OBJECT:
-            NRF_LOG_DEBUG("Received execute object\r\n");
+			#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+				printf("Received execute object\r\n");
+			#endif
 
             // Set req type
             dfu_req.req_type =  NRF_DFU_OBJECT_OP_EXECUTE;
@@ -447,7 +454,9 @@ static uint32_t on_ctrl_pt_write(ble_dfu_t * p_dfu, ble_gatts_evt_write_t * p_bl
             return response_send(p_dfu, BLE_DFU_OP_CODE_EXECUTE_OBJECT, res_code);
 
         case BLE_DFU_OP_CODE_SET_RECEIPT_NOTIF:
-            NRF_LOG_DEBUG("Set receipt notif\r\n");
+			#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+				printf("Set receipt notif\r\n");
+			#endif
             if (p_ble_write_evt->len != PKT_SET_PRN_PARAM_LEN)
             {
                 return (response_send(p_dfu,
@@ -463,7 +472,9 @@ static uint32_t on_ctrl_pt_write(ble_dfu_t * p_dfu, ble_gatts_evt_write_t * p_bl
             return response_send(p_dfu, BLE_DFU_OP_CODE_SET_RECEIPT_NOTIF, NRF_DFU_RES_CODE_SUCCESS);
 
         case BLE_DFU_OP_CODE_CALCULATE_CRC:
-            NRF_LOG_DEBUG("Received calculate CRC\r\n");
+			#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+				printf("Received calculate CRC\r\n");
+			#endif
 
             dfu_req.req_type =  NRF_DFU_OBJECT_OP_CRC;
 
@@ -479,7 +490,9 @@ static uint32_t on_ctrl_pt_write(ble_dfu_t * p_dfu, ble_gatts_evt_write_t * p_bl
 
         case BLE_DFU_OP_CODE_SELECT_OBJECT:
 
-            NRF_LOG_DEBUG("Received select object\r\n");
+			#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+				printf("Received select object\r\n");
+			#endif
             if (p_ble_write_evt->len != PKT_READ_OBJECT_INFO_PARAM_LEN)
             {
                 return response_send(p_dfu,
@@ -505,7 +518,9 @@ static uint32_t on_ctrl_pt_write(ble_dfu_t * p_dfu, ble_gatts_evt_write_t * p_bl
             }
 
         default:
-            NRF_LOG_WARNING("Received unsupported OP code\r\n");
+			#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+				printf("Received unsupported OP code\r\n");
+			#endif
             // Unsupported op code.
             return response_send(p_dfu,
                                  p_ble_write_evt->data[0],
@@ -589,7 +604,9 @@ static void on_write(ble_dfu_t * p_dfu, ble_evt_t * p_ble_evt)
         res_code = nrf_dfu_req_handler_on_req(NULL, &dfu_req, &dfu_res);
         if(res_code != NRF_DFU_RES_CODE_SUCCESS)
         {
-            NRF_LOG_ERROR("Failure to run packet write\r\n");
+			#ifdef BOOTLOADER_DFU_TRANSLATION_DEBUG
+				printf("Failure to run packet write\r\n");
+			#endif
         }
 
         // Check if a packet receipt notification is needed to be sent.

@@ -47,6 +47,8 @@
 #include "crc32.h"
 #include "nrf_log.h"
 #include "app_timer.h"
+#include "platform.h"
+#include <stdio.h>
 
 
 static app_timer_t nrf_dfu_utils_reset_delay_timer_data = { {0} };
@@ -512,7 +514,9 @@ bool nrf_dfu_app_is_valid(void)
     if (s_dfu_settings.bank_0.bank_code != NRF_DFU_BANK_VALID_APP)
     {
        // Bank 0 has no valid app. Nothing to boot
-       NRF_LOG_DEBUG("Return false in valid app check\r\n");
+		#ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+			printf("Return false in valid app check\r\n");
+		#endif
        return false;
     }
 
@@ -526,12 +530,16 @@ bool nrf_dfu_app_is_valid(void)
         if (crc != s_dfu_settings.bank_0.image_crc)
         {
             // CRC does not match with what is stored.
-            NRF_LOG_DEBUG("Return false in CRC\r\n");
+			#ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+				printf("Return false in CRC\r\n");
+			#endif
             return  false;
         }
     }
 
-    NRF_LOG_DEBUG("Return true. App was valid\r\n");
+	#ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+		printf("Return true. App was valid\r\n");
+	#endif
     return true;
 }
 

@@ -110,14 +110,14 @@ int main(void)
 {
     uint32_t ret_val;
     
-    (void) NRF_LOG_INIT(NULL);
+//    (void) NRF_LOG_INIT(NULL);
 
     leds_init();
     buttons_init();
     uart_init();
     
     #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
-        printf("start...\r\n");
+        printf("bootloader start...\r\n");
     #endif
 
 //    /*****Trigger Hard fault handler for test  *****/

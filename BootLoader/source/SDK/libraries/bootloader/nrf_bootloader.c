@@ -49,29 +49,29 @@
 
 
 /** @brief Weak implemenation of nrf_dfu_init
- *
- * @note   This function will be overridden if nrf_dfu.c is
- *         compiled and linked with the project
- */
- #if (__LINT__ != 1)
-__WEAK uint32_t nrf_dfu_init(void)
-{
-    NRF_LOG_DEBUG("in weak nrf_dfu_init\r\n");
-    return NRF_SUCCESS;
-}
-#endif
+// *
+// * @note   This function will be overridden if nrf_dfu.c is
+// *         compiled and linked with the project
+// */
+// #if (__LINT__ != 1)
+//__WEAK uint32_t nrf_dfu_init(void)
+//{
+//    NRF_LOG_DEBUG("in weak nrf_dfu_init\r\n");
+//    return NRF_SUCCESS;
+//}
+//#endif
 
 
-/** @brief Weak implementation of nrf_dfu_init
- *
- * @note    This function must be overridden in application if
- *          user-specific initialization is needed.
- */
-__WEAK uint32_t nrf_dfu_init_user(void)
-{
-    NRF_LOG_DEBUG("in weak nrf_dfu_init_user\r\n");
-    return NRF_SUCCESS;
-}
+///** @brief Weak implementation of nrf_dfu_init
+// *
+// * @note    This function must be overridden in application if
+// *          user-specific initialization is needed.
+// */
+//__WEAK uint32_t nrf_dfu_init_user(void)
+//{
+//    NRF_LOG_DEBUG("in weak nrf_dfu_init_user\r\n");
+//    return NRF_SUCCESS;
+//}
 
 
 uint32_t nrf_bootloader_init(void)

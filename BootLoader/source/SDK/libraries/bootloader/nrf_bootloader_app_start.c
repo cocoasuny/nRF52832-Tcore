@@ -41,6 +41,8 @@
 #include "nrf_bootloader_app_start.h"
 #include "nrf_log.h"
 #include "nrf_dfu_mbr.h"
+#include "platform.h"
+#include <stdio.h>
 
 #if defined(SOFTDEVICE_PRESENT)
 #include "nrf_sdm.h"

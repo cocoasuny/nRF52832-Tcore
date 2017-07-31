@@ -10,12 +10,12 @@
       <TargetName>nrf52832_xxaa_s132</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060300::V5.06 update 3 (build 300)::ARMCC</pCCUsed>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>nRF52832_xxAA</Device>
           <Vendor>Nordic Semiconductor</Vendor>
-          <PackID>NordicSemiconductor.nRF_DeviceFamilyPack.8.12.0</PackID>
+          <PackID>NordicSemiconductor.nRF_DeviceFamilyPack.8.14.1</PackID>
           <PackURL>http://developer.nordicsemi.com/nRF5_SDK/pieces/nRF_DeviceFamilyPack/</PackURL>
           <Cpu>IROM(0x00000000,0x80000) IRAM(0x20000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(64000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -333,7 +333,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>--reduce_paths</MiscControls>
-              <Define>BLE_STACK_SUPPORT_REQD BOARD_PCA10040 CONFIG_GPIO_AS_PINRESET NRF52 NRF52832_XXAA NRF52_PAN_12 NRF52_PAN_15 NRF52_PAN_20 NRF52_PAN_31 NRF52_PAN_36 NRF52_PAN_51 NRF52_PAN_54 NRF52_PAN_55 NRF52_PAN_58 NRF52_PAN_64 NRF52_PAN_74 NRF_DFU_DEBUG_VERSION NRF_DFU_SETTINGS_VERSION=1 NRF_SD_BLE_API_VERSION=4 S132 SOFTDEVICE_PRESENT SVC_INTERFACE_CALL_AS_NORMAL_FUNCTION SWI_DISABLE0 __HEAP_SIZE=0</Define>
+              <Define>BLE_STACK_SUPPORT_REQD BOARD_PCA10040 CONFIG_GPIO_AS_PINRESET NRF52 NRF52832_XXAA NRF52_PAN_12 NRF52_PAN_15 NRF52_PAN_20 NRF52_PAN_31 NRF52_PAN_36 NRF52_PAN_51 NRF52_PAN_54 NRF52_PAN_55 NRF52_PAN_58 NRF52_PAN_64 NRF52_PAN_74 NRF_DFU_DEBUG_VERSION NRF_DFU_SETTINGS_VERSION=1 NRF_SD_BLE_API_VERSION=4 S132 SOFTDEVICE_PRESENT SVC_INTERFACE_CALL_AS_NORMAL_FUNCTION SWI_DISABLE0 __HEAP_SIZE=0  NRF_DFU_DEBUG_VERSION</Define>
               <Undefine></Undefine>
               <IncludePath>..\source\Application;..\source\dfu_req_handling;..\source\MiddleWare\micro-ecc\nrf52_keil;..\source\MiddleWare\nano-pb\generator;..\source\MiddleWare\nano-pb;..\source\MiddleWare;..\source\SDK;..\source\SDK\ble;..\source\SDK\libraries\bootloader;..\source\SDK\libraries\bootloader\dfu;..\source\SDK\libraries\bootloader\ble_dfu;..\source\SDK\libraries\bootloader\serial_dfu;..\source\SDK\softdevice\common;..\source\SDK\softdevice\s132\headers;..\source\SDK\softdevice\s132\headers\nrf52;..\source\SDK\libraries\log;..\source\SDK\libraries\log\src;..\source\SDK\libraries\util;..\source\SDK\libraries\fstorage;..\source\SDK\libraries\strerror;..\source\SDK\libraries\experimental_section_vars;..\source\SDK\libraries\timer;..\source\SDK\ble\common;..\source\SDK\libraries\crc32;..\source\SDK\libraries\crypto;..\source\SDK\libraries\crypto\backend;..\source\SDK\libraries\crypto\backend\micro_ecc;..\source\SDK\drivers_nrf\hal;..\source\SDK\softdevice\common\softdevice_handler;..\source\SDK\drivers_nrf\delay;..\source\SDK\libraries\scheduler;..\source\SDK\drivers_nrf\common;..\source\SDK\libraries\queue;..\source\SDK\drivers_nrf\rng;..\source\SDK\libraries\crypto\backend\nrf_crypto_sw;..\source\SDK\libraries\mem_manager;..\source\SDK\libraries\sha256;..\source\MiddleWare\micro-ecc\micro-ecc;..\source\SDK\libraries\uart;..\source\SDK\libraries\uart;..\source\SDK\libraries\fifo;..\source\SDK\drivers_nrf\uart;..\source\BSP;..\source\SDK\libraries\hardfault;..\source\SDK\libraries\hardfault\nrf52\handler</IncludePath>
             </VariousControls>
