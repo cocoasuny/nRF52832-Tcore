@@ -21,6 +21,7 @@
 
 /* debug switch define */
 #define DEBUG_BLE_CONNECT
+#define DEBUG_BLE_DFU
 #define DEBUG_TEMPERATURE
 
 /* gpio define for uart */

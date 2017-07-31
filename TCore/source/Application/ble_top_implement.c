@@ -101,6 +101,7 @@ static void pm_evt_handler(pm_evt_t const * p_evt);
 static void advertising_start(void);
 static void on_ble_evt(ble_evt_t * p_ble_evt);
 static void on_hts_evt(ble_hts_t * p_hts, ble_hts_evt_t * p_evt);
+static void ble_dfu_evt_handler(ble_dfu_t * p_dfu, ble_dfu_evt_t * p_evt);
 
 /**
   * @brief  ble_top_implementation_thread 
@@ -191,11 +192,12 @@ static void ble_stack_init(void)
  */
 static void services_init(void)
 {
-    ret_code_t       err_code;
-    ble_hts_init_t   hts_init;      //health thermomter service    
-    ble_bas_init_t   bas_init;      //battery service
-    ble_dis_init_t   dis_init;      //device information service
-    ble_dis_sys_id_t sys_id;
+    ret_code_t          err_code;
+    ble_hts_init_t      hts_init;      //health thermomter service    
+    ble_bas_init_t      bas_init;      //battery service
+    ble_dis_init_t      dis_init;      //device information service
+    ble_dis_sys_id_t    sys_id;
+    ble_dfu_init_t      dfus_init;
     
     // Initialize Health Thermometer Service
     memset(&hts_init, 0, sizeof(hts_init));
@@ -232,6 +234,7 @@ static void services_init(void)
 
     err_code = ble_bas_init(&g_bas, &bas_init);
     APP_ERROR_CHECK(err_code); 
+    
 
     // Initialize Device Information Service.
     memset(&dis_init, 0, sizeof(dis_init));
@@ -247,7 +250,18 @@ static void services_init(void)
     BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&dis_init.dis_attr_md.write_perm);
 
     err_code = ble_dis_init(&dis_init);
-    APP_ERROR_CHECK(err_code);    
+    APP_ERROR_CHECK(err_code);
+    
+
+    // Initialize the Device Firmware Update Service.
+    memset(&dfus_init, 0, sizeof(dfus_init));
+
+    dfus_init.evt_handler                               = ble_dfu_evt_handler;
+    dfus_init.ctrl_point_security_req_write_perm        = SEC_SIGNED;
+    dfus_init.ctrl_point_security_req_cccd_write_perm   = SEC_SIGNED;
+
+    err_code = ble_dfu_init(&g_dfus, &dfus_init);
+    APP_ERROR_CHECK(err_code);
 }
 /**@brief Function for starting advertising.
  */
@@ -391,7 +405,8 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
     ble_advertising_on_ble_evt(p_ble_evt);
     nrf_ble_gatt_on_ble_evt(&m_gatt, p_ble_evt);
     ble_hts_on_ble_evt(&g_hts, p_ble_evt);
-    ble_bas_on_ble_evt(&g_bas, p_ble_evt);    
+    ble_bas_on_ble_evt(&g_bas, p_ble_evt); 
+    ble_dfu_on_ble_evt(&g_dfus, p_ble_evt);
 }
 
 /**@brief Function for dispatching a system event to interested modules.
@@ -722,6 +737,36 @@ static void on_hts_evt(ble_hts_t * p_hts, ble_hts_evt_t * p_evt)
 
         default:
             // No implementation needed.
+            break;
+    }
+}
+
+static void ble_dfu_evt_handler(ble_dfu_t * p_dfu, ble_dfu_evt_t * p_evt)
+{
+    switch (p_evt->type)
+    {
+        case BLE_DFU_EVT_INDICATION_DISABLED:
+            #ifdef DEBUG_BLE_DFU
+                printf("Indication for BLE_DFU is disabled.\r\n");
+            #endif
+            break;
+
+        case BLE_DFU_EVT_INDICATION_ENABLED:
+            #ifdef DEBUG_BLE_DFU
+                printf("Indication for BLE_DFU is enabled.\r\n");
+            #endif
+            break;
+
+        case BLE_DFU_EVT_ENTERING_BOOTLOADER:
+            #ifdef DEBUG_BLE_DFU
+                printf("Device is requested to enter bootloader mode!\r\n");
+            #endif
+            break;
+
+        default:
+            #ifdef DEBUG_BLE_DFU
+                printf("Unknown event from ble_dfu.\r\n");
+            #endif
             break;
     }
 }

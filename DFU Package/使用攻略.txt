@@ -1,0 +1,5 @@
+1、运行privateKeyGenerate.bat脚本，生成private.key文件。
+2、运行PublicKeyGenerate.bat脚本，生成public_key.c文件。
+3、将生成的pubilc_key.c文件复制到boolloader对应的工程文件夹下，覆盖原有的dfu_public_key.c文件，编译整个bootloader工程。
+4、将所需的升级文件tcore.hex覆盖该文件夹中的tcore.hex文件（注意：文件名、硬件版本号、固件版本号等需要修改DFUPackageGenerater.bat中对应的字段）。
+5、运行DFUPackageGenerater.bat即可
