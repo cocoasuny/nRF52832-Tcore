@@ -497,7 +497,9 @@ uint32_t nrf_dfu_continue(uint32_t * p_enter_dfu_mode)
     nrf_dfu_bank_t    * p_bank;
     uint32_t            src_addr = CODE_REGION_1_START;
 
-    NRF_LOG_DEBUG("Enter nrf_dfu_continue\r\n");
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("Enter nrf_dfu_continue:0x%x\r\n",s_dfu_settings.bank_layout);
+    #endif
 
     if (s_dfu_settings.bank_layout == NRF_DFU_BANK_LAYOUT_SINGLE )
     {

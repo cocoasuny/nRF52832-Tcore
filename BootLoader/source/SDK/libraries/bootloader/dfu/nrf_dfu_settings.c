@@ -188,6 +188,13 @@ void nrf_dfu_settings_init(void)
     // Copy the DFU settings out of flash and into a buffer in RAM.
     memcpy((void*)&s_dfu_settings, &m_dfu_settings_buffer[0], sizeof(nrf_dfu_settings_t));
 
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("DFU setting info:\r\n");
+        printf("\tsettings_version:0x%x\r\n",s_dfu_settings.settings_version);
+        printf("\tapp_version:0x%x\r\n",s_dfu_settings.app_version);
+        printf("\tbootloader_version:0x%x\r\n",s_dfu_settings.bootloader_version);
+    #endif    
+    
     if(s_dfu_settings.crc != 0xFFFFFFFF)
     {
         // CRC is set. Content must be valid
