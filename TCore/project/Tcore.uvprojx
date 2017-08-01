@@ -137,7 +137,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -297,8 +297,8 @@
               </OCR_RVCT8>
               <OCR_RVCT9>
                 <Type>0</Type>
-                <StartAddress>0x20001fc0</StartAddress>
-                <Size>0xe040</Size>
+                <StartAddress>0x20001fd0</StartAddress>
+                <Size>0xe030</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
                 <Type>0</Type>
@@ -393,6 +393,11 @@
               <FileName>measurement.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\source\Application\measurement.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardfault_implementation.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\SDK\libraries\hardfault\hardfault_implementation.c</FilePath>
             </File>
             <File>
               <FileName>ble_top_implement.c</FileName>
@@ -613,11 +618,6 @@
               <FilePath>..\source\SDK\libraries\fstorage\fstorage.c</FilePath>
             </File>
             <File>
-              <FileName>hardfault_implementation.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\source\SDK\libraries\hardfault\hardfault_implementation.c</FilePath>
-            </File>
-            <File>
               <FileName>sensorsim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\source\SDK\libraries\sensorsim\sensorsim.c</FilePath>
@@ -636,6 +636,11 @@
               <FileName>app_fifo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\source\SDK\libraries\fifo\app_fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>hardfault_handler_keil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\SDK\libraries\hardfault\nrf52\handler\hardfault_handler_keil.c</FilePath>
             </File>
           </Files>
         </Group>

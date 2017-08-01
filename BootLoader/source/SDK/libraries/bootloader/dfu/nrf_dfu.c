@@ -208,6 +208,7 @@ uint32_t nrf_dfu_init()
     {
         #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
             printf("Jumping to: 0x%08x\r\n", MAIN_APPLICATION_START_ADDR);
+            nrf_delay_ms(1000);
         #endif
         nrf_bootloader_app_start(MAIN_APPLICATION_START_ADDR);
     }

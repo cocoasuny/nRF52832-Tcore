@@ -33,7 +33,7 @@ exit
 @echo %date:~4% %time:~0,-3% 
 cd D:\nRF52832\DFU Package
 
-nrfutil pkg generate --hw-version 52 --application-version 1 --application tcore.hex --sd-req 0x98 --key-file private.key tcore_app_dfu_package.zip
+nrfutil pkg generate --hw-version 52 --application-version 1 --application tcore.hex --sd-req 0x9E --key-file private.key tcore_app_dfu_package.zip
 
 @echo  请按任意键继续
 pause>hul

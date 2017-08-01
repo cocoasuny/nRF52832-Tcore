@@ -44,6 +44,8 @@
 #include <string.h>
 #include "app_scheduler.h"
 #include "nrf_delay.h"
+#include "platform.h"
+#include <stdio.h>
 
 /** @brief  This variable reserves a codepage for bootloader specific settings,
  *          to ensure the compiler doesn't locate any code or variables at his location.
@@ -197,7 +199,9 @@ void nrf_dfu_settings_init(void)
     }
 
     // Reached if nothing is configured or if CRC was wrong
-    NRF_LOG_DEBUG("!!!!!!!!!!!!!!! Resetting bootloader settings !!!!!!!!!!!\r\n");
+    #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+        printf("!!!!!!!!!!!!!!! Resetting bootloader settings !!!!!!!!!!!\r\n");
+    #endif
     memset(&s_dfu_settings, 0x00, sizeof(nrf_dfu_settings_t));
     s_dfu_settings.settings_version = NRF_DFU_SETTINGS_VERSION;
     APP_ERROR_CHECK(nrf_dfu_settings_write(NULL));

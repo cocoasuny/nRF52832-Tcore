@@ -50,6 +50,10 @@ int main(void)
     
     /* Tasks creat */
     main_task_start();
+
+//    /*****Trigger Hard fault handler for test  *****/
+//    *(uint8_t *)(0xFFFFFFFF) = 0;
+//    /************************/
     
     /* Activate deep sleep mode */
     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;    

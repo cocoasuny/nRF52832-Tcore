@@ -440,7 +440,9 @@ static uint32_t nrf_dfu_continue_bank(nrf_dfu_bank_t * p_bank, uint32_t src_addr
     switch (p_bank->bank_code)
     {
        case NRF_DFU_BANK_VALID_APP:
-            NRF_LOG_DEBUG("Valid App\r\n");
+            #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+                printf("Valid App\r\n");
+            #endif
             if(s_dfu_settings.bank_current == NRF_DFU_CURRENT_BANK_1)
             {
                 // Only continue copying if valid app in bank1
@@ -449,7 +451,9 @@ static uint32_t nrf_dfu_continue_bank(nrf_dfu_bank_t * p_bank, uint32_t src_addr
             break;
 #if defined(SOFTDEVICE_PRESENT)
        case NRF_DFU_BANK_VALID_SD:
-            NRF_LOG_DEBUG("Valid SD\r\n");
+            #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+                printf("Valid SD\r\n");
+            #endif
             // There is a valid SD that needs to be copied (or continued)
             ret_val = nrf_dfu_sd_continue(src_addr, p_bank);
             (*p_enter_dfu_mode) = 1;
@@ -457,14 +461,18 @@ static uint32_t nrf_dfu_continue_bank(nrf_dfu_bank_t * p_bank, uint32_t src_addr
 #endif
 
         case NRF_DFU_BANK_VALID_BL:
-            NRF_LOG_DEBUG("Valid BL\r\n");
+            #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+                printf("Valid BL\r\n");
+            #endif
             // There is a valid BL that must be copied (or continued)
             ret_val = nrf_dfu_bl_continue(src_addr, p_bank);
             break;
 
 #if defined(SOFTDEVICE_PRESENT)
         case NRF_DFU_BANK_VALID_SD_BL:
-            NRF_LOG_DEBUG("Valid SD + BL\r\n");
+            #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+                printf("Valid SD + BL\r\n");
+            #endif
             // There is a valid SD + BL that must be copied (or continued)
             ret_val = nrf_dfu_sd_bl_continue(src_addr, p_bank);
             // Set the bank-code to invalid, and reset size/CRC
@@ -474,7 +482,9 @@ static uint32_t nrf_dfu_continue_bank(nrf_dfu_bank_t * p_bank, uint32_t src_addr
 
         case NRF_DFU_BANK_INVALID:
         default:
-            NRF_LOG_ERROR("Single: Invalid bank\r\n");
+            #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+                printf("Single: Invalid bank\r\n");
+            #endif
             break;
     }
 
