@@ -207,12 +207,12 @@ static void services_init(void)
     hts_init.temp_type                   = BLE_HTS_TEMP_TYPE_BODY;
 
     // Here the sec level for the Health Thermometer Service can be changed/increased.
-    BLE_GAP_CONN_SEC_MODE_SET_ENC_NO_MITM(&hts_init.hts_meas_attr_md.cccd_write_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hts_init.hts_meas_attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hts_init.hts_meas_attr_md.write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hts_init.hts_meas_attr_md.cccd_write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hts_init.hts_meas_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hts_init.hts_meas_attr_md.write_perm);
 
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hts_init.hts_temp_type_attr_md.read_perm);
-    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hts_init.hts_temp_type_attr_md.write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hts_init.hts_temp_type_attr_md.write_perm);
 
     err_code = ble_hts_init(&g_hts, &hts_init);
     APP_ERROR_CHECK(err_code);

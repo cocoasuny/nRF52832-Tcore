@@ -12,6 +12,7 @@ cls
 @echo * Desciption: 用于生成BootLoader Setting文件
 @echo * 版本说明: 1.0:创建
 @echo * 办公室路劲：cd D:\nRF52832\FactoryTools
+@echo * 家里路径：cd D:\Code\nRF52832-Tcore\FactoryTools
 @echo **************************************************************************
 
 
@@ -33,7 +34,7 @@ exit
 :Next
 @echo %date:~4% %time:~0,-3% 
 
-cd D:\Code\nRF52832-Tcore\FactoryTools
+cd D:\nRF52832\FactoryTools
 
 nrfutil settings generate --family NRF52 --application tcore.hex --application-version 0 --bootloader-version 0 --bl-settings-version 1 bootloader_setting.hex
 
