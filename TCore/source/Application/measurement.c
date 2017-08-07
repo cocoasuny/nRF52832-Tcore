@@ -18,6 +18,8 @@
 #include "app_freertos.h"
 #include "ble_hts.h"
 #include "battery_management.h"
+#include "alg_temperature.h"
+#include "bsp_temperature.h"
 
 
 /* private define */
@@ -32,6 +34,7 @@ static ble_hts_meas_t               m_healthThermometerValue;
 /* private function declare */
 static void temperature_sampleTimer_cb(xTimerHandle pxTimer);
 static void core_temperature_result_package(ble_hts_meas_t * p_meas, float Val);
+static void core_temperature_rt_sample(uint32_t *TH2Rt,uint32_t *TH1Rt);
 
 /**
   * @brief  measurement_thread
@@ -43,11 +46,11 @@ void measurement_thread(void *pvParameters)
 {
 	const TickType_t 		xMaxBlockTime = pdMS_TO_TICKS(300); /* 设置最大等待时间为 300ms */
 	TEM_MSG_T 				temQueueMsgValue;
-//	uint32_t                Rt = 0;
-//    uint32_t                TH2Rt = 0;
-//    uint32_t                TH1Rt = 0;
-//	float					TH2 = 0;
-//	float					TH1 = 0;
+    uint32_t                TH2Rt = 0;
+    uint32_t                TH1Rt = 0;
+	float					TH2 = 0;
+	float					TH1 = 0;
+    float                   temperatureVal = 0;
     ret_code_t              err_code = NRF_ERROR_NULL;
 	
 	/* creat event queue for core temperature */
@@ -76,7 +79,7 @@ void measurement_thread(void *pvParameters)
                         printf("start core temperature\r\n");
                     #endif
 					/* init core temperature measure arithmetic */
-//					alg_core_temperature_calculate_init();
+					alg_core_temperature_calculate_init();
 					
 					/* start the time for temperature measure freq */
 					if(temSampleTime != NULL)
@@ -100,14 +103,14 @@ void measurement_thread(void *pvParameters)
                     )
 					{
 						/* core temperature sample */
-//                        core_temperature_rt_sample(&TH2Rt,&TH1Rt);
+                        core_temperature_rt_sample(&TH2Rt,&TH1Rt);
 
 						/* core temperature measure and update the value */
-//						ntc_temperature_calculate(TH2Rt,&TH2,NTC_10K);
-//						ntc_temperature_calculate(TH1Rt,&TH1,NTC_10K);
+						ntc_temperature_calculate(TH2Rt,&TH2,NTC_10K);
+						ntc_temperature_calculate(TH1Rt,&TH1,NTC_10K);
 						
 						/* calculate the core temperature through TH1,TH2 */
-//						core_temperature_calculate(TH1,TH2,&g_TemVal);
+						core_temperature_calculate(TH1,TH2,&temperatureVal);
 						#ifdef DEBUG_TEMPERATURE
 //							printf("core tem val:%0.1f\r\n",g_TemVal);
 						#endif
@@ -232,6 +235,35 @@ static void core_temperature_result_package(ble_hts_meas_t * p_meas, float Val)
     p_meas->temp_in_fahr.mantissa    = (32 * 100) + ((Val * 9) / 5);
     p_meas->time_stamp               = time_stamp;
     p_meas->temp_type                = BLE_HTS_TEMP_TYPE_BODY;    
+}
+
+/**
+  * @brief  core_temperature_rt_sample
+  * @note   NTC阻值采集
+  * @param  *TH2Rt,*TH1Rt(Ω)
+  * @retval None    
+  */
+static void core_temperature_rt_sample(uint32_t *TH2Rt,uint32_t *TH1Rt)
+{
+    float Vsens12 = 0;
+	float Vsens23 = 0;
+    
+    /* init core temperature measure hw source */
+    core_temperature_hw_init();
+    
+    /* calculate the value of Rt */
+    core_TH2_temperature_sample(&Vsens12,&Vsens23);
+    *TH2Rt = (uint32_t)(Vsens12 / (Vsens23/R_CAL));
+
+    core_TH1_temperature_sample(&Vsens12,&Vsens23);
+    *TH1Rt = (uint32_t)(Vsens12 / (Vsens23/R_CAL));
+
+    #ifdef DEBUG_TEMPERATURE
+        printf("TH2Rt:%d,  TH1Rt:%d\r\n",*TH2Rt,*TH1Rt);
+	#endif
+    
+    /* deinit core temperature measure hw source */	
+    core_temperature_hw_deinit();
 }
 
 /************************ (C) COPYRIGHT 2017 ShenZhen DBGJ Co., Ltd. *****END OF FILE****/
