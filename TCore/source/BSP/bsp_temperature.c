@@ -25,6 +25,7 @@ static void core_temperature_channel_switch_IO_Init(void);
 static void core_temperature_channel_switch_IO_DeInit(void);
 static void core_temperature_channel_switch(SWITCH_CHANNEL_DEF channel);
 static ret_code_t adc_init(void);
+static void adc_deinit(void);
 static void saadc_callback(nrf_drv_saadc_evt_t const * p_event);
 static ret_code_t adc_convert(float * p_value);
 
@@ -106,7 +107,7 @@ void core_temperature_hw_deinit(void)
     core_temperature_channel_switch_IO_DeInit();
     
     /* adc deinit */
-    
+    adc_deinit();
 }
 /**
   * @brief  core_temperature_channel_switch_IO_Init
@@ -204,6 +205,15 @@ static ret_code_t adc_init(void)
     return err_code;
 }
 /**
+  * @brief  adc_deinit
+  * @param  None
+  * @retval None   
+  */
+static void adc_deinit(void)
+{
+    nrf_drv_saadc_uninit();
+}
+/**
   * @brief  adc_convert
   * @brief  启动NTC AD转换
   * @param[out]  p_value
@@ -232,9 +242,9 @@ static ret_code_t adc_convert(float * p_value)
     }
     
     adc_avg = (nrf_saadc_value_t)(adc_sum/ADC_AVARAGE_TIMES);
-    (*p_value) = (float)(adc_avg*3.6/512);
+    (*p_value) = (float)(adc_avg*3.6/2048);
     #ifdef DEBUG_TEMPERATURE_ADC
-        printf("ADC Val:%d,%02f\r\n",adc_avg,(*p_value));
+        printf("ADC Val:%d,%2.2f\r\n",adc_avg,(*p_value));
     #endif
     
     return err_code;

@@ -26,8 +26,8 @@
 #define DEBUG_TEMPERATURE_ADC
 
 /* gpio define for uart */
-#define RX_PIN_NUMBER               2
-#define TX_PIN_NUMBER               3
+#define RX_PIN_NUMBER               23
+#define TX_PIN_NUMBER               24
 #define CTS_PIN_NUMBER              17
 #define RTS_PIN_NUMBER              15
 #define HWFC                        false
