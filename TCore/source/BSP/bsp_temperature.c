@@ -59,17 +59,15 @@ void core_TH2_temperature_sample(float *VSens12,float *VSens23)
 	
 	/* switch the core temperature chanel */
 	core_temperature_channel_switch(ChannelA0B0);
+    vTaskDelay(15);
     adc_convert(&V_sens);
 	*VSens12 = V_sens;
-	
-//    HAL_Delay(10);
-    
+	    
 	/* switch the core temperature chanel */
 	core_temperature_channel_switch(ChannelA1B1);
+    vTaskDelay(15);
 	adc_convert(&V_sens);
 	*VSens23 = V_sens;	
-    
-//    HAL_Delay(10);
 }
 /**
   * @brief  core_TH1_temperature_sample
@@ -83,17 +81,15 @@ void core_TH1_temperature_sample(float *VSens12,float *VSens23)
 	
 	/* switch the core temperature chanel */
 	core_temperature_channel_switch(ChannelA2B2);
+    vTaskDelay(15);
 	adc_convert(&V_sens);
 	*VSens12 = V_sens;
-    
-//    HAL_Delay(10);
 	
 	/* switch the core temperature chanel */
 	core_temperature_channel_switch(ChannelA3B3);
+    vTaskDelay(15);
 	adc_convert(&V_sens);
 	*VSens23 = V_sens;	
-    
-//    HAL_Delay(10);
 }
 /**
   * @brief  core_temperature_deinit
