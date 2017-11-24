@@ -27,21 +27,21 @@
 
 /* gpio define for uart */
 #define RX_PIN_NUMBER               23
-#define TX_PIN_NUMBER               24
+#define TX_PIN_NUMBER               18
 #define CTS_PIN_NUMBER              17
 #define RTS_PIN_NUMBER              15
 #define HWFC                        false
     
 /* gpio define for adc */
-#define ADIN_P                      NRF_SAADC_INPUT_AIN0
-#define ADIN_N                      NRF_SAADC_INPUT_AIN1
+#define ADIN_P                      NRF_SAADC_INPUT_AIN2
+#define ADIN_N                      NRF_SAADC_INPUT_AIN3
 #define CORE_TEMPERATURE_ADC_NO     0
 #define ADC_AVARAGE_TIMES	        10
 #define ADC_GAIN                    NRF_SAADC_GAIN1_6
 
 /* gpio define for sn74lv4052 */
-#define GPIO_PIN_CORE_TEM_CTL0      6      
-#define GPIO_PIN_CORE_TEM_CTL1      7
+#define GPIO_PIN_CORE_TEM_CTL0      12      
+#define GPIO_PIN_CORE_TEM_CTL1      14
 
 
 

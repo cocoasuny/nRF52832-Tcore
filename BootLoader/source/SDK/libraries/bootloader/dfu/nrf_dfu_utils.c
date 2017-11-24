@@ -291,6 +291,9 @@ static void reset_device_callback( fs_evt_t const * const evt, fs_ret_t result )
     {
         // Start a timer which resets the device on expiration.
         NRF_LOG_DEBUG("Starting reset delay timer\r\n");
+        #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
+            printf("Starting reset delay timer\r\n");
+        #endif
         uint32_t err_code = app_timer_start(nrf_dfu_utils_reset_delay_timer, APP_TIMER_TICKS(RESET_DELAY_LENGTH_MS), NULL);
         APP_ERROR_CHECK(err_code);
     }

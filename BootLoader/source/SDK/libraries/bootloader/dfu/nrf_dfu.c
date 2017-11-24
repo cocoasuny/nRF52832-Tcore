@@ -216,6 +216,7 @@ uint32_t nrf_dfu_init()
     // Should not be reached!
     #ifdef BOOTLOADER_TOP_LEVEL_DEBUG
         printf("After real nrf_dfu_init\r\n");
+        nrf_delay_ms(1000);
     #endif
     return NRF_SUCCESS;
 }

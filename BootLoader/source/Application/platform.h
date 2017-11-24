@@ -37,8 +37,8 @@
     #define UART_RX_BUF_SIZE 1            /**< UART RX buffer size. */
 #endif
 /* gpio define for uart */
-#define RX_PIN_NUMBER               2
-#define TX_PIN_NUMBER               3
+#define RX_PIN_NUMBER               23
+#define TX_PIN_NUMBER               18
 #define CTS_PIN_NUMBER              7
 #define RTS_PIN_NUMBER              5
 #define HWFC                        false
