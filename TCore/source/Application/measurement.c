@@ -113,7 +113,7 @@ void measurement_thread(void *pvParameters)
 						/* calculate the core temperature through TH1,TH2 */
 						core_temperature_calculate(TH1,TH2,&temperatureVal);
 						#ifdef DEBUG_TEMPERATURE
-//							printf("core tem val:%0.1f\r\n",g_TemVal);
+							printf("core tem val:%0.1f\r\n",temperatureVal);
 						#endif
                         
                         /* for test */
@@ -124,7 +124,7 @@ void measurement_thread(void *pvParameters)
                         ble_battery_level_transmit(i);
                         
                         /* package the result of core temperature */
-                        core_temperature_result_package(&m_healthThermometerValue,i);
+                        core_temperature_result_package(&m_healthThermometerValue,temperatureVal);
                         
                         /* handle with the core temperature result */
                         temQueueMsgValue.eventID = EVENT_HANDLE_CORETEM_RESULT;
@@ -225,17 +225,33 @@ static void temperature_sampleTimer_cb(xTimerHandle pxTimer)
 static void core_temperature_result_package(ble_hts_meas_t * p_meas, float Val)
 {
     static ble_date_time_t time_stamp = { 2012, 12, 5, 11, 50, 0 };
+	
+	uint32_t celciusX100;
+	
+	celciusX100 = (uint32_t)(Val * 100);
 
     p_meas->temp_in_fahr_units = false;
     p_meas->time_stamp_present = true;
     p_meas->temp_type_present  = (TEMP_TYPE_AS_CHARACTERISTIC ? false : true);
 
     p_meas->temp_in_celcius.exponent = -2;
-    p_meas->temp_in_celcius.mantissa = Val;
+    p_meas->temp_in_celcius.mantissa = celciusX100;
     p_meas->temp_in_fahr.exponent    = -2;
-    p_meas->temp_in_fahr.mantissa    = (32 * 100) + ((Val * 9) / 5);
+    p_meas->temp_in_fahr.mantissa    = (32 * 100) + ((celciusX100 * 9) / 5);
     p_meas->time_stamp               = time_stamp;
-    p_meas->temp_type                = BLE_HTS_TEMP_TYPE_BODY;    
+    p_meas->temp_type                = BLE_HTS_TEMP_TYPE_BODY;  
+
+    // update simulated time stamp
+    time_stamp.seconds += 27;
+    if (time_stamp.seconds > 59)
+    {
+        time_stamp.seconds -= 60;
+        time_stamp.minutes++;
+        if (time_stamp.minutes > 59)
+        {
+            time_stamp.minutes = 0;
+        }
+    }	
 }
 
 /**
