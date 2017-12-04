@@ -202,16 +202,9 @@ void alg_core_temperature_calculate_init(void)
   */
 void core_temperature_calculate(float Th1,float Th2, float *coreTem)
 {
-	if(Th1 >= Th2)
-	{
-		*coreTem = Th1 + alg_coreTemperature_param1*(Th1-Th2) + alg_coreTemperature_param2*(Th1+Th2)/2 \
-					   - alg_coreTemperature_param3*Th2 + alg_coreTemperature_param4*(Th1-Th2) \
-					   - alg_coreTemperature_param5*(Th1+Th2);
-	}
-	else //采集错误
-	{
-		*coreTem = 0;
-	}
+	*coreTem = Th1 + alg_coreTemperature_param1*(Th1-Th2) + alg_coreTemperature_param2*(Th1+Th2)/2 \
+				   - alg_coreTemperature_param3*Th2 + alg_coreTemperature_param4*(Th1-Th2) \
+				   - alg_coreTemperature_param5*(Th1+Th2);
 }
 
 
