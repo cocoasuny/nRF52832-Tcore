@@ -297,7 +297,7 @@
 // <2=> Synth 
 
 #ifndef CLOCK_CONFIG_LF_SRC
-#define CLOCK_CONFIG_LF_SRC 1
+#define CLOCK_CONFIG_LF_SRC 0
 #endif
 
 // <o> CLOCK_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -1857,7 +1857,6 @@
 #endif //RTC_ENABLED
 // </e>
 
-// </e>
 
 // <e> SPIS_ENABLED - nrf_drv_spis - SPI Slave driver
 //==========================================================
@@ -4039,12 +4038,5 @@
 
 #endif //SAADC_ENABLED
 
-// </h> 
-//==========================================================
-
-// </h> 
-//==========================================================
-
-// <<< end of configuration section >>>
 #endif //SDK_CONFIG_H
 
