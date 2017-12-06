@@ -117,7 +117,7 @@ static void core_temperature_channel_switch_IO_Init(void)
     nrf_gpio_cfg_output(GPIO_PIN_CORE_TEM_CTL0);
 
 	/* Configure CTL1 pins */
-    nrf_gpio_cfg_output(GPIO_PIN_CORE_TEM_CTL0);
+    nrf_gpio_cfg_output(GPIO_PIN_CORE_TEM_CTL1);
 }
 /**
   * @brief  core_temperature_channel_switch_IO_DeInit
@@ -131,7 +131,7 @@ static void core_temperature_channel_switch_IO_DeInit(void)
     nrf_gpio_cfg_default(GPIO_PIN_CORE_TEM_CTL0);
 
 	/* Configure CTL1 pins */
-    nrf_gpio_cfg_default(GPIO_PIN_CORE_TEM_CTL0);
+    nrf_gpio_cfg_default(GPIO_PIN_CORE_TEM_CTL1);
 }
 /**
   * @brief  core_temperature_channel_switch

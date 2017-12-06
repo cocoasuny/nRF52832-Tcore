@@ -271,9 +271,6 @@ static void core_temperature_rt_sample(uint32_t *TH2Rt,uint32_t *TH1Rt)
     /* calculate the value of Rt */
     core_TH2_temperature_sample(&Vsens12,&Vsens23);
     *TH2Rt = (uint32_t)(Vsens12 / (Vsens23/R_CAL));
-    
-//    core_TH1_temperature_sample(&Vsens12,&Vsens23);
-//    *TH2Rt = (uint32_t)(Vsens12 / (Vsens23/R_CAL));    
 
     core_TH1_temperature_sample(&Vsens12,&Vsens23);
     *TH1Rt = (uint32_t)(Vsens12 / (Vsens23/R_CAL));
