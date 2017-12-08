@@ -302,7 +302,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
     switch (p_ble_evt->header.evt_id)
     {
         case BLE_GAP_EVT_CONNECTED:
-            #ifdef DEBUG_BLE_CONNECT
+            #if DEBUG_BLE_CONNECT
                 printf("Connected\r\n");
             #endif
 
@@ -314,7 +314,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             break; // BLE_GAP_EVT_CONNECTED
 
         case BLE_GAP_EVT_DISCONNECTED:
-            #ifdef DEBUG_BLE_CONNECT
+            #if DEBUG_BLE_CONNECT
                 printf("Disconnected\r\n");
             #endif
         
@@ -328,7 +328,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
         case BLE_GATTC_EVT_TIMEOUT:
             // Disconnect on GATT Client timeout event.
-            #ifdef DEBUG_BLE_CONNECT
+            #if DEBUG_BLE_CONNECT
                 printf("GATT Client Timeout.\r\n");
             #endif
         
@@ -339,7 +339,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
 
         case BLE_GATTS_EVT_TIMEOUT:
             // Disconnect on GATT Server timeout event.
-            #ifdef DEBUG_BLE_CONNECT
+            #if DEBUG_BLE_CONNECT
                 printf("GATT Server Timeout.\r\n");
             #endif
             err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gatts_evt.conn_handle,
@@ -507,7 +507,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
     switch (ble_adv_evt)
     {
         case BLE_ADV_EVT_FAST:
-            #ifdef DEBUG_BLE_CONNECT
+            #if DEBUG_BLE_CONNECT
                 printf("Fast advertising.\r\n");
             #endif
 //            err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
@@ -515,7 +515,7 @@ static void on_adv_evt(ble_adv_evt_t ble_adv_evt)
             break;
 
         case BLE_ADV_EVT_IDLE:
-            #ifdef DEBUG_BLE_CONNECT
+            #if DEBUG_BLE_CONNECT
                 printf("Adv IDLE\r\n");
             #endif
 //            sleep_mode_enter();
@@ -622,14 +622,14 @@ static void pm_evt_handler(pm_evt_t const * p_evt)
     {
         case PM_EVT_BONDED_PEER_CONNECTED:
         {
-            #ifdef DEBUG_BLE_CONNECT
+            #if DEBUG_BLE_CONNECT
                 printf("Connected to a previously bonded device.\r\n");
             #endif
         } break;
 
         case PM_EVT_CONN_SEC_SUCCEEDED:
         {
-            #ifdef DEBUG_BLE_CONNECT
+            #if DEBUG_BLE_CONNECT
                 printf("Connection secured: role: %d, conn_handle: 0x%x, procedure: %d.\r\n",
                              ble_conn_state_role(p_evt->conn_handle),
                              p_evt->conn_handle,
@@ -746,25 +746,25 @@ static void ble_dfu_evt_handler(ble_dfu_t * p_dfu, ble_dfu_evt_t * p_evt)
     switch (p_evt->type)
     {
         case BLE_DFU_EVT_INDICATION_DISABLED:
-            #ifdef DEBUG_BLE_DFU
+            #if DEBUG_BLE_DFU
                 printf("Indication for BLE_DFU is disabled.\r\n");
             #endif
             break;
 
         case BLE_DFU_EVT_INDICATION_ENABLED:
-            #ifdef DEBUG_BLE_DFU
+            #if DEBUG_BLE_DFU
                 printf("Indication for BLE_DFU is enabled.\r\n");
             #endif
             break;
 
         case BLE_DFU_EVT_ENTERING_BOOTLOADER:
-            #ifdef DEBUG_BLE_DFU
+            #if DEBUG_BLE_DFU
                 printf("Device is requested to enter bootloader mode!\r\n");
             #endif
             break;
 
         default:
-            #ifdef DEBUG_BLE_DFU
+            #if DEBUG_BLE_DFU
                 printf("Unknown event from ble_dfu.\r\n");
             #endif
             break;

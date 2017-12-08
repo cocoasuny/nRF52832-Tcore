@@ -20,11 +20,12 @@
 
 
 /* debug switch define */
-#define DEBUG_BLE_CONNECT
-#define DEBUG_BLE_DFU
-#define DEBUG_TEMPERATURE
-#define DEBUG_TEMPERATURE_ADC
-
+#define DEBUG_BLE_CONNECT							1	//enable ble connect debug
+#define DEBUG_BLE_DFU								1	//enable ble DFU debug
+#define DEBUG_TEMPERATURE_TOP_LEVEL					1	//enable temperature top level debug
+#define DEBUG_TEMPERATURE							1	//enable temperature debug
+#define DEBUG_TEMPERATURE_ADC						0	//disable temperature adc debug
+	
 /* gpio define for uart */
 #define RX_PIN_NUMBER               23
 #define TX_PIN_NUMBER               18

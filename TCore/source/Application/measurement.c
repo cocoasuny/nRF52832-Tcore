@@ -56,7 +56,7 @@ void measurement_thread(void *pvParameters)
 	
 	/* creat event queue for core temperature */
 	measureMentEventQueue = xQueueCreate(MEASUREMENT_EVENT_QUEUE_SIZE,sizeof(TEM_MSG_T));
-	#ifdef DEBUG_TEMPERATURE
+	#if DEBUG_TEMPERATURE
 		if(measureMentEventQueue == NULL)
 		{
 			printf("temperature queue creat fail\r\n");
@@ -76,7 +76,7 @@ void measurement_thread(void *pvParameters)
 			{
 				case EVENT_START_CORETEM_MEASURE:
 				{				
-                    #ifdef DEBUG_TEMPERATURE
+                    #if DEBUG_TEMPERATURE || DEBUG_TEMPERATURE_TOP_LEVEL
                         printf("start core temperature\r\n");
                     #endif
 					/* init core temperature measure arithmetic */
@@ -95,8 +95,8 @@ void measurement_thread(void *pvParameters)
 				break;
 				case EVENT_GET_CORETEM_RESULT:
 				{
-                    #ifdef DEBUG_TEMPERATURE
-                        printf("get core temperature\r\n");
+                    #if DEBUG_TEMPERATURE
+//                        printf("get core temperature\r\n");
                     #endif                    
 					if(
                         (gMeasurement_stat_get(TEMPERATURE_MEASURE_STATUS) != OFF)  &&
@@ -112,8 +112,8 @@ void measurement_thread(void *pvParameters)
 						
 						/* calculate the core temperature through TH1,TH2 */
 						core_temperature_calculate(TH1,TH2,&temperatureVal);
-						#ifdef DEBUG_TEMPERATURE
-							printf("core tem val:%0.1f\r\n",temperatureVal);
+						#if DEBUG_TEMPERATURE || DEBUG_TEMPERATURE_TOP_LEVEL
+//							printf("core tem val:%0.1f\r\n",temperatureVal);
 						#endif
                         
                         /* for test */
@@ -135,9 +135,9 @@ void measurement_thread(void *pvParameters)
                 case EVENT_HANDLE_CORETEM_RESULT:
                 {
                     /* handle with the core temperature result */
-                    #ifdef DEBUG_TEMPERATURE
-                        printf("ble transmit the core tem result:\r\n");
-                    #endif
+//                    #if DEBUG_TEMPERATURE
+//                        printf("ble transmit the core tem result:\r\n");
+//                    #endif
                     
                     if(
                         (gMeasurement_stat_get(TEMPERATURE_MEASURE_STATUS) != OFF)  &&
@@ -152,7 +152,7 @@ void measurement_thread(void *pvParameters)
                 break;
 				case EVENT_STOP_CORETEM_MEASURE:
 				{
-                    #ifdef DEBUG_TEMPERATURE
+                    #if DEBUG_TEMPERATURE || DEBUG_TEMPERATURE_TOP_LEVEL
                         printf("stop core temperature\r\n");
                     #endif                    
 					xTimerDelete(temSampleTime,0);
@@ -275,7 +275,7 @@ static void core_temperature_rt_sample(uint32_t *TH2Rt,uint32_t *TH1Rt)
     core_TH1_temperature_sample(&Vsens12,&Vsens23);
     *TH1Rt = (uint32_t)(Vsens12 / (Vsens23/R_CAL));
 
-    #ifdef DEBUG_TEMPERATURE
+    #if DEBUG_TEMPERATURE
         printf("TH2Rt:%d,  TH1Rt:%d\r\n",*TH2Rt,*TH1Rt);
 	#endif
     
