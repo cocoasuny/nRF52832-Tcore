@@ -36,7 +36,7 @@
 #define ADIN_P                      NRF_SAADC_INPUT_AIN2
 #define ADIN_N                      NRF_SAADC_INPUT_AIN3
 #define CORE_TEMPERATURE_ADC_NO     0
-#define ADC_AVARAGE_TIMES	        10
+#define ADC_AVARAGE_TIMES	        20
 #define ADC_GAIN                    NRF_SAADC_GAIN1_6
 
 /* gpio define for sn74lv4052 */

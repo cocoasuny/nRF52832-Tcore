@@ -25,7 +25,7 @@
 #define TEM_SAMPLE_PER								pdMS_TO_TICKS(1000) //ms
 
 /* calculate register define */
-#define R_CAL										(10000) //O
+#define R_CAL										(4700) //O
 
 /* Define sub-function status */
 #define TEMPERATURE_MEASURE_STATUS 			        (1 << 0)

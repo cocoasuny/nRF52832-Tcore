@@ -30,6 +30,10 @@ static void saadc_callback(nrf_drv_saadc_evt_t const * p_event);
 static ret_code_t adc_convert(float * p_value);
 
 
+/* private variables declare */
+static bool adc_offset_calibration_done = false;
+
+
 /**
   * @brief  core_temperature_hw_init
   * @brief  参考温度测量
@@ -46,6 +50,13 @@ void core_temperature_hw_init(void)
 	/* ADC Init */
     err = adc_init();
     APP_ERROR_CHECK(err);
+	
+	adc_offset_calibration_done = false;
+	APP_ERROR_CHECK(nrf_drv_saadc_calibrate_offset());
+	while(adc_offset_calibration_done == false)
+	{
+		/* wait for adc offset calibration complete */
+	}
 }
 /**
   * @brief  core_TH2_temperature_sample
@@ -59,13 +70,13 @@ void core_TH2_temperature_sample(float *VSens12,float *VSens23)
 	
 	/* switch the core temperature chanel */
 	core_temperature_channel_switch(ChannelA0B0);
-    vTaskDelay(15);
+    vTaskDelay(20);
     adc_convert(&V_sens);
 	*VSens12 = V_sens;
 	    
 	/* switch the core temperature chanel */
 	core_temperature_channel_switch(ChannelA1B1);
-    vTaskDelay(15);
+    vTaskDelay(20);
 	adc_convert(&V_sens);
 	*VSens23 = V_sens;	
 }
@@ -81,13 +92,13 @@ void core_TH1_temperature_sample(float *VSens12,float *VSens23)
 	
 	/* switch the core temperature chanel */
 	core_temperature_channel_switch(ChannelA2B2);
-    vTaskDelay(15);
+    vTaskDelay(20);
 	adc_convert(&V_sens);
 	*VSens12 = V_sens;
 	
 	/* switch the core temperature chanel */
 	core_temperature_channel_switch(ChannelA3B3);
-    vTaskDelay(15);
+    vTaskDelay(20);
 	adc_convert(&V_sens);
 	*VSens23 = V_sens;	
 }
@@ -178,7 +189,14 @@ static void core_temperature_channel_switch(SWITCH_CHANNEL_DEF channel)
   */
 static void saadc_callback(nrf_drv_saadc_evt_t const * p_event)
 {
-    //nothing to do at this moment
+    if(p_event->type == NRF_DRV_SAADC_EVT_DONE)	//Capture ADC Convert complete event
+    {		
+		//nothing to do
+	}
+	else if(p_event->type == NRF_DRV_SAADC_EVT_CALIBRATEDONE)	//Capture offset calibration complete event
+	{
+		adc_offset_calibration_done = true;
+	}
 }
 /**
   * @brief  adc_init
@@ -218,7 +236,7 @@ static void adc_deinit(void)
 static ret_code_t adc_convert(float * p_value)
 {
     ret_code_t              err_code = NRF_ERROR_NULL;
-    nrf_saadc_value_t       adc_sum = 0;
+    uint32_t				adc_sum = 0;
     nrf_saadc_value_t       adc_val = 0;
     nrf_saadc_value_t       adc_avg = 0;
     uint8_t                 i = 0;
@@ -240,7 +258,7 @@ static ret_code_t adc_convert(float * p_value)
     adc_avg = (nrf_saadc_value_t)(adc_sum/ADC_AVARAGE_TIMES);
     (*p_value) = (float)(adc_avg*3.6/2048);
     #ifdef DEBUG_TEMPERATURE_ADC
-        printf("ADC Val:%d,%2.2f\r\n",adc_avg,(*p_value));
+        printf("ADC Val:%d,%2.5f\r\n",adc_avg,(*p_value));
     #endif
     
     return err_code;
