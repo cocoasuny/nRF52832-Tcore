@@ -20,6 +20,7 @@
 #include "ble_hts.h"
 #include "battery_management.h"
 #include "alg_temperature.h"
+#include "alg_kalmanfilter.h"
 #include "bsp_temperature.h"
 
 
@@ -81,6 +82,7 @@ void measurement_thread(void *pvParameters)
                     #endif
 					/* init core temperature measure arithmetic */
 					alg_core_temperature_calculate_init();
+					alg_kalmanfilter_init();
 					
 					/* start the time for temperature measure freq */
 					if(temSampleTime != NULL)
@@ -113,8 +115,15 @@ void measurement_thread(void *pvParameters)
 						/* calculate the core temperature through TH1,TH2 */
 						core_temperature_calculate(TH1,TH2,&temperatureVal);
 						#if DEBUG_TEMPERATURE || DEBUG_TEMPERATURE_TOP_LEVEL
-//							printf("core tem val:%0.1f\r\n",temperatureVal);
+							//printf("core tem val:%0.1f\r\n",temperatureVal);
 						#endif
+						
+						/* kalman filter for the temperature value */
+						temperatureVal = alg_kalmanfilter(temperatureVal);
+						
+						#if DEBUG_TEMPERATURE || DEBUG_TEMPERATURE_TOP_LEVEL
+							//printf("kalman core tem val:%0.1f\r\n",temperatureVal);
+						#endif						
                         
                         /* for test */
                         static uint8_t i = 0;
@@ -135,9 +144,9 @@ void measurement_thread(void *pvParameters)
                 case EVENT_HANDLE_CORETEM_RESULT:
                 {
                     /* handle with the core temperature result */
-//                    #if DEBUG_TEMPERATURE
-//                        printf("ble transmit the core tem result:\r\n");
-//                    #endif
+                    #if DEBUG_TEMPERATURE
+                        //printf("ble transmit the core tem result:\r\n");
+                    #endif
                     
                     if(
                         (gMeasurement_stat_get(TEMPERATURE_MEASURE_STATUS) != OFF)  &&

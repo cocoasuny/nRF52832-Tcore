@@ -37,7 +37,7 @@
 #define ADIN_P                      NRF_SAADC_INPUT_AIN2
 #define ADIN_N                      NRF_SAADC_INPUT_AIN3
 #define CORE_TEMPERATURE_ADC_NO     0
-#define ADC_AVARAGE_TIMES	        20
+#define ADC_AVARAGE_TIMES	        16		//notice:必须大于2，即从3开始（因为adc最终值采用去掉最大最小值，求平均值的方式得到最终结果）
 #define ADC_GAIN                    NRF_SAADC_GAIN1_6
 
 /* gpio define for sn74lv4052 */

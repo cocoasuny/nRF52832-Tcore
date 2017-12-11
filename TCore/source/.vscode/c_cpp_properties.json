@@ -1,0 +1,157 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceRoot}"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            },
+            "macFrameworkPath": [
+                "/System/Library/Frameworks",
+                "/Library/Frameworks"
+            ]
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/include",
+                "/usr/local/include",
+                "${workspaceRoot}"
+            ],
+            "defines": [],
+            "intelliSenseMode": "clang-x64",
+            "browse": {
+                "path": [
+                    "/usr/include",
+                    "/usr/local/include",
+                    "${workspaceRoot}"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/VC/Tools/MSVC/14.10.25017/include/*",
+                "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt",
+                "${workspaceRoot}",
+                "${workspaceRoot}/Middlewares/freertos/source/include",
+                "${workspaceRoot}/Application",
+                "${workspaceRoot}/Middlewares/freertos",
+                "${workspaceRoot}/SDK/drivers_nrf",
+                "${workspaceRoot}/Middlewares/freertos/config",
+                "${workspaceRoot}/Middlewares/freertos/portable/ARM",
+                "${workspaceRoot}/Middlewares/freertos/portable/CMSIS",
+                "${workspaceRoot}/Middlewares/freertos/source/include",
+                "${workspaceRoot}/SDK/softdevice/s132/headers",
+                "${workspaceRoot}/SDK/libraries/util",
+                "${workspaceRoot}/Middlewares/freertos/source/portable/MemMang",
+                "${workspaceRoot}/Middlewares/freertos/portable/ARM/nrf52",
+                "${workspaceRoot}/Middlewares/freertos/portable/CMSIS/nrf52",
+                "${workspaceRoot}/SDK/libraries/log",
+                "${workspaceRoot}/SDK/libraries/strerror",
+                "${workspaceRoot}/SDK/libraries/log/src",
+                "${workspaceRoot}/SDK/softdevice/common/softdevice_handler",
+                "${workspaceRoot}/SDK/drivers_nrf/hal",
+                "${workspaceRoot}/SDK/drivers_nrf/clock",
+                "${workspaceRoot}/SDK/drivers_nrf/common",
+                "${workspaceRoot}/SDK/libraries/fstorage",
+                "${workspaceRoot}/SDK/libraries/experimental_section_vars",
+                "${workspaceRoot}/SDK/drivers_nrf/uart",
+                "${workspaceRoot}/SDK/drivers_nrf/power",
+                "${workspaceRoot}/BSP",
+                "${workspaceRoot}/SDK/libraries/cli",
+                "${workspaceRoot}/SDK/libraries/cli/uart",
+                "${workspaceRoot}/SDK/libraries/uart",
+                "${workspaceRoot}/SDK/libraries/fifo",
+                "${workspaceRoot}/SDK/ble",
+                "${workspaceRoot}/SDK/ble/nrf_ble_gatt",
+                "${workspaceRoot}/SDK/ble/ble_advertising",
+                "${workspaceRoot}/SDK/ble/ble_db_discovery",
+                "${workspaceRoot}/SDK/ble/common",
+                "${workspaceRoot}/SDK/libraries/timer",
+                "${workspaceRoot}/SDK/libraries/fds",
+                "${workspaceRoot}/SDK/ble/peer_manager",
+                "${workspaceRoot}/SDK/ble/ble_services/ble_hts",
+                "${workspaceRoot}/SDK/ble/ble_services/ble_bas",
+                "${workspaceRoot}/SDK/ble/ble_services/ble_dis",
+                "${workspaceRoot}/SDK/ble/ble_services/ble_dfu",
+                "${workspaceRoot}/Arithmetic",
+                "${workspaceRoot}/SDK/drivers_nrf/saadc",
+                "C:/Keil_v5/ARM/PACK/NordicSemiconductor/nRF_DeviceFamilyPack/8.12.0/Device/Include",
+                "C:/Keil_v5/ARM/PACK/NordicSemiconductor/nRF_DeviceFamilyPack/8.12.0/Device/Include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE"
+            ],
+            "intelliSenseMode": "msvc-x64",
+            "browse": {
+                "path": [
+                    "C:/Program Files (x86)/Microsoft Visual Studio/2017/Professional/VC/Tools/MSVC/14.10.25017/include/*",
+                    "C:/Program Files (x86)/Windows Kits/10/Include/10.0.10240.0/ucrt",
+                    "${workspaceRoot}",
+                    "${workspaceRoot}/Application",
+                    "${workspaceRoot}/Middlewares/freertos",
+                    "${workspaceRoot}/SDK/drivers_nrf",
+                    "${workspaceRoot}/Middlewares/freertos/config",
+                    "${workspaceRoot}/Middlewares/freertos/portable/ARM",
+                    "${workspaceRoot}/Middlewares/freertos/portable/CMSIS",
+                    "${workspaceRoot}/Middlewares/freertos/source/include",
+                    "${workspaceRoot}/SDK/softdevice/s132/headers",
+                    "${workspaceRoot}/SDK/libraries/util",
+                    "${workspaceRoot}/Middlewares/freertos/source/portable/MemMang",
+                    "${workspaceRoot}/Middlewares/freertos/portable/ARM/nrf52",
+                    "${workspaceRoot}/Middlewares/freertos/portable/CMSIS/nrf52",
+                    "${workspaceRoot}/SDK/libraries/log",
+                    "${workspaceRoot}/SDK/libraries/strerror",
+                    "${workspaceRoot}/SDK/libraries/log/src",
+                    "${workspaceRoot}/SDK/softdevice/common/softdevice_handler",
+                    "${workspaceRoot}/SDK/drivers_nrf/hal",
+                    "${workspaceRoot}/SDK/drivers_nrf/clock",
+                    "${workspaceRoot}/SDK/drivers_nrf/common",
+                    "${workspaceRoot}/SDK/libraries/fstorage",
+                    "${workspaceRoot}/SDK/libraries/experimental_section_vars",
+                    "${workspaceRoot}/SDK/drivers_nrf/uart",
+                    "${workspaceRoot}/SDK/drivers_nrf/power",
+                    "${workspaceRoot}/BSP",
+                    "${workspaceRoot}/SDK/libraries/cli",
+                    "${workspaceRoot}/SDK/libraries/cli/uart",
+                    "${workspaceRoot}/SDK/libraries/uart",
+                    "${workspaceRoot}/SDK/libraries/fifo",
+                    "${workspaceRoot}/SDK/ble",
+                    "${workspaceRoot}/SDK/ble/nrf_ble_gatt",
+                    "${workspaceRoot}/SDK/ble/ble_advertising",
+                    "${workspaceRoot}/SDK/ble/ble_db_discovery",
+                    "${workspaceRoot}/SDK/ble/common",
+                    "${workspaceRoot}/SDK/libraries/timer",
+                    "${workspaceRoot}/SDK/libraries/fds",
+                    "${workspaceRoot}/SDK/ble/peer_manager",
+                    "${workspaceRoot}/SDK/ble/ble_services/ble_hts",
+                    "${workspaceRoot}/SDK/ble/ble_services/ble_bas",
+                    "${workspaceRoot}/SDK/ble/ble_services/ble_dis",
+                    "${workspaceRoot}/SDK/ble/ble_services/ble_dfu",
+                    "${workspaceRoot}/Arithmetic",
+                    "${workspaceRoot}/SDK/drivers_nrf/saadc",
+                    "C:/Keil_v5/ARM/PACK/NordicSemiconductor/nRF_DeviceFamilyPack/8.12.0/Device/Include"
+                ],
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": ""
+            }
+        }
+    ],
+    "version": 3
+}

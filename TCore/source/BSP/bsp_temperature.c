@@ -240,12 +240,40 @@ static ret_code_t adc_convert(float * p_value)
     nrf_saadc_value_t       adc_val = 0;
     nrf_saadc_value_t       adc_avg = 0;
     uint8_t                 i = 0;
+	nrf_saadc_value_t		maxValue = 0;
+	nrf_saadc_value_t		minValue = 0;
+	uint8_t 				avageTime = 0;
+
+	/* 第一次采集，获取最大最小值初始值 */
+	err_code = nrf_drv_saadc_sample_convert(CORE_TEMPERATURE_ADC_NO,&adc_val);
+	if(err_code == NRF_SUCCESS)
+	{			
+		/* 找出最大、最小值 */
+		maxValue = adc_val;
+		minValue = adc_val;			
+		adc_sum = adc_sum + adc_val;
+	}
+	else
+	{
+		APP_ERROR_CHECK(err_code);
+		return err_code;
+	}  	
     
-    for(i=0;i<ADC_AVARAGE_TIMES;i++)
+	/* 剩余 ADC_AVARAGE_TIMES -1 次采集 */
+    for(i=0;i<(ADC_AVARAGE_TIMES-1);i++)
     {
         err_code = nrf_drv_saadc_sample_convert(CORE_TEMPERATURE_ADC_NO,&adc_val);
         if(err_code == NRF_SUCCESS)
-        {
+        {			
+			/* 找出最大、最小值 */
+			if(adc_val >= maxValue)
+			{
+				maxValue = adc_val;
+			}
+			if(adc_val <= minValue)
+			{
+				minValue = adc_val;
+			}						
             adc_sum = adc_sum + adc_val;
         }
         else
@@ -255,7 +283,10 @@ static ret_code_t adc_convert(float * p_value)
         }     
     }
     
-    adc_avg = (nrf_saadc_value_t)(adc_sum/ADC_AVARAGE_TIMES);
+	/* 去掉最大最小值，求平均值 */
+	adc_sum = adc_sum - maxValue - minValue;
+	avageTime = ADC_AVARAGE_TIMES - 2;
+    adc_avg = (nrf_saadc_value_t)(adc_sum/avageTime);
     (*p_value) = (float)(adc_avg*3.6/2048);
     #if DEBUG_TEMPERATURE_ADC
         printf("ADC Val:%d,%2.5f\r\n",adc_avg,(*p_value));

@@ -543,6 +543,11 @@
               <FileType>1</FileType>
               <FilePath>..\source\Arithmetic\alg_temperature.c</FilePath>
             </File>
+            <File>
+              <FileName>alg_kalmanfilter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\source\Arithmetic\alg_kalmanfilter.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
