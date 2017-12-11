@@ -35,7 +35,7 @@ void alg_kalmanfilter_init(void)
 {
 	estimateValue = 0;
 	estimateCovariance = 0.1;
-	measureCovariance = 0.02;
+	measureCovariance = 0.85;
 }	
 
 

@@ -115,14 +115,14 @@ void measurement_thread(void *pvParameters)
 						/* calculate the core temperature through TH1,TH2 */
 						core_temperature_calculate(TH1,TH2,&temperatureVal);
 						#if DEBUG_TEMPERATURE || DEBUG_TEMPERATURE_TOP_LEVEL
-							//printf("core tem val:%0.1f\r\n",temperatureVal);
+							printf("core tem val:%0.1f\r\n",temperatureVal);
 						#endif
 						
 						/* kalman filter for the temperature value */
 						temperatureVal = alg_kalmanfilter(temperatureVal);
 						
 						#if DEBUG_TEMPERATURE || DEBUG_TEMPERATURE_TOP_LEVEL
-							//printf("kalman core tem val:%0.1f\r\n",temperatureVal);
+							printf("kalman core tem val:%0.1f\r\n",temperatureVal);
 						#endif						
                         
                         /* for test */
