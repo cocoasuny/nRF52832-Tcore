@@ -30,11 +30,13 @@
 
 /* private variable declare */
 static TimerHandle_t				temSampleTime = NULL;
+static TimerHandle_t				temTransmitTime = NULL;
 static uint16_t 					gSubFuncState = OFF;
 static ble_hts_meas_t               m_healthThermometerValue;               
 
 /* private function declare */
 static void temperature_sampleTimer_cb(xTimerHandle pxTimer);
+static void temperature_transmitTimer_cb(xTimerHandle pxTimer);
 static void core_temperature_result_package(ble_hts_meas_t * p_meas, float Val);
 static void core_temperature_rt_sample(uint32_t *TH2Rt,uint32_t *TH1Rt);
 
@@ -92,6 +94,14 @@ void measurement_thread(void *pvParameters)
 					temSampleTime = xTimerCreate("temTime",TEM_SAMPLE_PER,pdTRUE,(void *)0,temperature_sampleTimer_cb);
 					xTimerStart(temSampleTime,0);
 					
+					/* start the time for temperature transmit freq */
+					if(temTransmitTime != NULL)
+					{
+						xTimerDelete(temTransmitTime,0);
+					}
+					temTransmitTime = xTimerCreate("temTTime",TEM_TRANSIMIT_PER,pdTRUE,(void *)0,temperature_transmitTimer_cb);
+					xTimerStart(temTransmitTime,0);
+					
 					gMeasurement_stat_set(TEMPERATURE_MEASURE_STATUS,ON);
 				}
 				break;
@@ -133,11 +143,7 @@ void measurement_thread(void *pvParameters)
                         ble_battery_level_transmit(i);
                         
                         /* package the result of core temperature */
-                        core_temperature_result_package(&m_healthThermometerValue,temperatureVal);
-                        
-                        /* handle with the core temperature result */
-                        temQueueMsgValue.eventID = EVENT_HANDLE_CORETEM_RESULT;
-                        xQueueSend(measureMentEventQueue,(void *)&temQueueMsgValue,xMaxBlockTime);  
+                        core_temperature_result_package(&m_healthThermometerValue,temperatureVal); 
 					}
 				}
 				break;
@@ -166,6 +172,10 @@ void measurement_thread(void *pvParameters)
                     #endif                    
 					xTimerDelete(temSampleTime,0);
 					temSampleTime = NULL;
+					
+					xTimerDelete(temTransmitTime,0);
+					temTransmitTime = NULL;	
+					
 					gMeasurement_stat_set(TEMPERATURE_MEASURE_STATUS,OFF);
 				}
 				break;                
@@ -224,6 +234,34 @@ static void temperature_sampleTimer_cb(xTimerHandle pxTimer)
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
+/**
+  * @brief  temperature_sampleTimer_cb
+  * @note   Tcore测量定时器回调函数，用于控制温度结果发送
+  * @param  pxTimer
+  * @retval None    
+  */
+static void temperature_transmitTimer_cb(xTimerHandle pxTimer)
+{
+	TEM_MSG_T 				temQueueMsgValue;
+	BaseType_t              xHigherPriorityTaskWoken = pdFALSE;
+    
+	pxTimer = pxTimer;
+	
+    if(gMeasurement_stat_get(TEMPERATURE_MEASURE_STATUS) != OFF)
+    {        
+        temQueueMsgValue.eventID = EVENT_HANDLE_CORETEM_RESULT;
+    }
+    else    //the measurement of thermometer is off
+    {
+        temQueueMsgValue.eventID = EVENT_STOP_CORETEM_MEASURE;      
+    }
+    xQueueSendFromISR(measureMentEventQueue,(void *)&temQueueMsgValue,&xHigherPriorityTaskWoken);
+    if(xHigherPriorityTaskWoken == pdTRUE)
+    {
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+}
+
 /**
   * @brief  core_temperature_result_package
   * @note   核心温度结果打包   

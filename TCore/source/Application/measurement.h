@@ -22,7 +22,8 @@
 
 /* definitions */
 #define MEASUREMENT_EVENT_QUEUE_SIZE    			(10)
-#define TEM_SAMPLE_PER								pdMS_TO_TICKS(1000) //ms
+#define TEM_SAMPLE_PER								pdMS_TO_TICKS(100)	//	100ms采一次
+#define TEM_TRANSIMIT_PER							pdMS_TO_TICKS(1000)	//	1s发送一次计算结果
 
 /* calculate register define */
 #define R_CAL										(4700) //O

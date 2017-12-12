@@ -35,7 +35,7 @@ void alg_kalmanfilter_init(void)
 {
 	estimateValue = 0;
 	estimateCovariance = 0.1;
-	measureCovariance = 0.85;
+	measureCovariance = 1;
 }	
 
 
@@ -48,16 +48,16 @@ void alg_kalmanfilter_init(void)
 float alg_kalmanfilter(float measure_val) 
 {
 	// 1. 计算卡尔曼增益
-	kalmanGain = estimateCovariance*sqrt(1 / (estimateCovariance*estimateCovariance + measureCovariance*measureCovariance));
+	kalmanGain = estimateCovariance*(sqrt(1 / (estimateCovariance*estimateCovariance + measureCovariance*measureCovariance)));
 	
 	// 2. 计算本次滤波估计值
 	estimateValue = estimateValue + kalmanGain*(measure_val - estimateValue);
 	
 	// 3. 更新估计协方差
-	estimateCovariance = sqrt(1-kalmanGain)*estimateCovariance;
+	estimateCovariance = (sqrt(1-kalmanGain))*estimateCovariance;
 	
-	// 4. 更新测量方差
-	measureCovariance = sqrt(1-kalmanGain)*measureCovariance;
+	// 4. 更新测量协方差
+	measureCovariance = (sqrt(1-kalmanGain))*measureCovariance;
 	
 	// 5. 返回预估值
 	return estimateValue;
