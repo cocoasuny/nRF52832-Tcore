@@ -23,7 +23,7 @@
 #define DEBUG_BLE_CONNECT							1	//enable ble connect debug
 #define DEBUG_BLE_DFU								1	//enable ble DFU debug
 #define DEBUG_TEMPERATURE_TOP_LEVEL					1	//enable temperature top level debug
-#define DEBUG_TEMPERATURE							1	//enable temperature debug
+#define DEBUG_TEMPERATURE							0	//enable temperature debug
 #define DEBUG_TEMPERATURE_ADC						0	//disable temperature adc debug
 	
 /* gpio define for uart */

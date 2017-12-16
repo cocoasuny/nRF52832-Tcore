@@ -26,7 +26,7 @@
 #define TEM_TRANSIMIT_PER							pdMS_TO_TICKS(1000)	//	1s发送一次计算结果
 
 /* calculate register define */
-#define R_CAL										(4700) //O
+#define R_CAL										(10000) //O
 
 /* Define sub-function status */
 #define TEMPERATURE_MEASURE_STATUS 			        (1 << 0)

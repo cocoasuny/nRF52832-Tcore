@@ -21,8 +21,9 @@
 /* private variable declare */
 static float kalmanGain = 0;				//	卡尔曼增益
 static float estimateCovariance = 0;		//	估计协方差
-static float measureCovariance = 0;			//	测量协方差
 static float estimateValue = 0;				//	估计值
+static float ProcessNiose_Q = 0;			//  Q:过程噪声，Q增大，动态响应变快，收敛稳定性变坏
+static float MeasureNoise_R = 0;			//  R:测量噪声，R增大，动态响应变慢，收敛稳定性变好
 
 
 /**
@@ -34,8 +35,9 @@ static float estimateValue = 0;				//	估计值
 void alg_kalmanfilter_init(void)
 {
 	estimateValue = 0;
-	estimateCovariance = 0.1;
-	measureCovariance = 1;
+	estimateCovariance = 0;
+	ProcessNiose_Q = 0.001;			//  Q:过程噪声，Q增大，动态响应变快，收敛稳定性变坏
+	MeasureNoise_R = 0.3;			//  R:测量噪声，R增大，动态响应变慢，收敛稳定性变好	
 }	
 
 
@@ -47,17 +49,20 @@ void alg_kalmanfilter_init(void)
   */
 float alg_kalmanfilter(float measure_val) 
 {
-	// 1. 计算卡尔曼增益
-	kalmanGain = estimateCovariance*(sqrt(1 / (estimateCovariance*estimateCovariance + measureCovariance*measureCovariance)));
-	
-	// 2. 计算本次滤波估计值
+
+	// 1. 更新估计协方差
+	estimateCovariance = estimateCovariance + ProcessNiose_Q;
+
+	// 2. 计算卡尔曼增益
+	kalmanGain = estimateCovariance/(estimateCovariance + MeasureNoise_R);
+
+	printf(",kg:%0.5f,",kalmanGain);
+
+	// 3. 计算本次滤波估计值
 	estimateValue = estimateValue + kalmanGain*(measure_val - estimateValue);
 	
-	// 3. 更新估计协方差
-	estimateCovariance = (sqrt(1-kalmanGain))*estimateCovariance;
-	
-	// 4. 更新测量协方差
-	measureCovariance = (sqrt(1-kalmanGain))*measureCovariance;
+	// 4. 更新估计协方差
+	estimateCovariance = (1-kalmanGain)*estimateCovariance; 
 	
 	// 5. 返回预估值
 	return estimateValue;
